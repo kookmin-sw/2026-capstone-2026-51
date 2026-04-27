@@ -145,53 +145,28 @@ export default function Sidebar({ open = false, onClose }) {
               </div>
             );
           })}
-
-          {/* Related sites */}
-          <div className="mt-6 pt-3 border-t border-white/10">
-            <div className="flex items-center gap-1 px-3 py-1.5 text-white/55 text-[11.5px] font-semibold uppercase tracking-wide">
-              <span>관련 사이트</span>
-              <ChevronDown size={11} />
-            </div>
-            <div className="space-y-0.5">
-              {RELATED_SITES.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block px-3 py-1 text-[12px] text-white/60 hover:text-white transition-colors"
-                >
-                  · {s.label}
-                </a>
-              ))}
-            </div>
-          </div>
         </nav>
 
-        {/* Dev preview links — 라우트 밖 페이지 미리보기 (DEV 빌드에서만 노출) */}
-        {import.meta.env.DEV && (
-          <div className="px-3.5 py-2 border-t border-white/10 text-[10.5px]">
-            <div className="text-white/40 mb-1 uppercase tracking-wider">
-              미리보기
-            </div>
-            <div className="flex flex-wrap gap-x-2 gap-y-0.5">
-              <NavLink
-                to="/landing"
-                onClick={onClose}
-                className="text-white/60 hover:text-white"
-              >
-                랜딩
-              </NavLink>
-              <NavLink
-                to="/onboarding"
-                onClick={onClose}
-                className="text-white/60 hover:text-white"
-              >
-                온보딩
-              </NavLink>
-            </div>
+        {/* 관련 사이트 — 푸터 위 고정 영역 */}
+        <div className="px-3.5 py-2 border-t border-white/10">
+          <div className="flex items-center gap-1 px-1 py-1 text-white/55 text-[11.5px] font-semibold uppercase tracking-wide">
+            <span>관련 사이트</span>
+            <ChevronDown size={11} />
           </div>
-        )}
+          <div className="space-y-0.5">
+            {RELATED_SITES.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-1 py-1 text-[10.5px] text-white/60 hover:text-white transition-colors"
+              >
+                · {s.label}
+              </a>
+            ))}
+          </div>
+        </div>
 
         {/* User footer */}
         <div className="flex items-center gap-2.5 px-3.5 py-3 border-t border-white/10">
