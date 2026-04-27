@@ -32,6 +32,11 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Postgres
+    implementation 'org.postgresql:postgresql'
+    implementation 'com.pgvector:pgvector:0.1.4'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-70:3.15.2'
 }
 
 tasks.named('test') {
