@@ -1,18 +1,12 @@
 /**
- * 대시보드 데이터 — 원본 app.html에서 그대로 가져왔습니다.
- * 5축 레이더 / 학기 타임라인 / 선배 로드맵.
+ * 대시보드 시각화에서 공유하는 정적 카테고리 토큰.
+ *
+ * 5축(parttime/activity/intern/internal/cert) 라벨·색상을 한 곳에서 관리해
+ * MyRoadmapCard / SeniorRoadmapCard / 범례가 동일 어휘를 사용.
+ *
+ * (PeersOrb 평균/본인, 선배 마일스톤, 학기 축은 모두 GET /users/me/dashboard 응답으로 대체됨.)
  */
 
-/* ===== 1. 5축 동기 비교 (PeersOrb) ===== */
-export const PEER_AXES = [
-  { key: 'internal', label: '대내활동', me: 78, peers: 55 },
-  { key: 'activity', label: '대외활동', me: 42, peers: 60 },
-  { key: 'intern', label: '인턴', me: 65, peers: 48 },
-  { key: 'parttime', label: '알바', me: 50, peers: 45 },
-  { key: 'cert', label: '자격증', me: 55, peers: 62 },
-];
-
-/* ===== 2. 카테고리 라벨/색상 — Roadmap에서 공통 사용 ===== */
 export const CAT_LABELS = {
   parttime: '알바',
   activity: '대외활동',
@@ -20,6 +14,7 @@ export const CAT_LABELS = {
   internal: '대내활동',
   cert: '자격증',
 };
+
 export const CAT_COLORS = {
   parttime: '#475569', // slate
   activity: '#c2742d', // muted orange
