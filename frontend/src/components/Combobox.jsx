@@ -106,6 +106,12 @@ export default function Combobox({
   };
 
   const select = (v) => {
+    onChange(v);
+    setOpen(false);
+  };
+
+  const onSearchKey = (e) => {
+    if (e.key === 'ArrowDown') {
 
   return null;
 }
