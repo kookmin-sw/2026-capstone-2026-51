@@ -33,6 +33,13 @@ export default function Combobox({
   searchable = true,
   forceDirection,
 }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [active, setActive] = useState(0); // keyboard highlight idx
+  const [direction, setDirection] = useState('down'); // 'down' | 'up' — viewport 공간에 따라 자동 결정
+  const containerRef = useRef(null);
+  const searchRef = useRef(null);
+  const listRef = useRef(null);
 
   return null;
 }
