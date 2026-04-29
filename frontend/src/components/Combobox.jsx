@@ -126,6 +126,39 @@ export default function Combobox({
 
   return (
     <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={trigger}
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={cn(
+          'field text-[14px] py-2.5 pr-9 text-left flex items-center justify-between',
+          hasError && 'border-red-500 focus:border-red-500',
+          disabled && 'opacity-60 cursor-not-allowed',
+          !disabled && 'cursor-pointer',
+          !selected && 'text-ink-400'
+        )}
+      >
+        <span className="truncate">{selected?.label || placeholder}</span>
+        {allowClear && selected && !disabled ? (
+          <span
+            role="button"
+            tabIndex={-1}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange('');
+            }}
+            className="absolute right-8 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-700 p-0.5"
+            aria-label="선택 지우기"
+          >
+            <XIcon size={13} strokeWidth={2.2} />
+          </span>
+        ) : null}
+        <ChevronDown
+          size={15}
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-400"
+        />
 
   return null;
 }
