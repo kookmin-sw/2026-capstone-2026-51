@@ -77,6 +77,13 @@ export default function Combobox({
   }, [open]);
 
   // active 변경 시 해당 항목 가시 영역으로 스크롤
+  useEffect(() => {
+    if (!open || !listRef.current) return;
+    const el = listRef.current.querySelector(`[data-idx="${active}"]`);
+    el?.scrollIntoView({ block: 'nearest' });
+  }, [active, open]);
+
+  const trigger = () => {
 
   return null;
 }
