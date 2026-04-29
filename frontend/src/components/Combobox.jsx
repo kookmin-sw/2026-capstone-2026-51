@@ -159,6 +159,29 @@ export default function Combobox({
           size={15}
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-400"
         />
+      </button>
+
+      {open && (
+        <div
+          className={cn(
+            'absolute z-30 w-full bg-paper border border-ink-200 rounded-md shadow-lg overflow-hidden',
+            direction === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'
+          )}
+          role="listbox"
+        >
+          {searchable && (
+            <div className="border-b border-ink-150 p-2 bg-ink-50">
+              <div className="relative">
+                <Search
+                  size={13}
+                  strokeWidth={2}
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none"
+                />
+                <input
+                  ref={searchRef}
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
 
   return null;
 }
