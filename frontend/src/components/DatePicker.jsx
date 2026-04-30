@@ -98,5 +98,21 @@ export default function DatePicker({
     setOpen((o) => !o);
   };
 
+  const selectDay = (y, m, d) => {
+    onChange(fmtIso(y, m, d));
+    setOpen(false);
+    setMode('day');
+  };
+
+  const selectMonth = (m) => {
+    setView((v) => ({ ...v, month: m }));
+    setMode('day');
+  };
+
+  const selectYear = (y) => {
+    setView((v) => ({ ...v, year: y }));
+    setMode('month');
+  };
+
   return null;
 }
