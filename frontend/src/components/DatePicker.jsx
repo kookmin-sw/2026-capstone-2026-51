@@ -139,5 +139,21 @@ export default function DatePicker({
     return fmtIso(t.getFullYear(), t.getMonth(), t.getDate());
   }, []);
 
+  // min/max 의 연·월 분해 → nav 비활성화 조건 계산용 (모든 view 의 ◀▶ 에 적용해 미래/과거 진입 자체 차단).
+  const minYM = useMemo(
+    () =>
+      min
+        ? { year: Number(min.slice(0, 4)), month: Number(min.slice(5, 7)) - 1 }
+        : null,
+    [min]
+  );
+  const maxYM = useMemo(
+    () =>
+      max
+        ? { year: Number(max.slice(0, 4)), month: Number(max.slice(5, 7)) - 1 }
+        : null,
+    [max]
+  );
+
   return null;
 }
