@@ -77,5 +77,26 @@ export default function DatePicker({
     };
   }, [open]);
 
+  const trigger = () => {
+    if (disabled) return;
+    if (!open) {
+      // 열 때 view 를 현재 value(또는 today) 의 월로 동기화 + 'day' 모드로 시작
+      setView(initialView);
+      setMode('day');
+      if (forceDirection) {
+        setDirection(forceDirection);
+      } else {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect) {
+          const DROPDOWN_H = 360;
+          const below = window.innerHeight - rect.bottom;
+          const above = rect.top;
+          setDirection(below < DROPDOWN_H && above > below ? 'up' : 'down');
+        }
+      }
+    }
+    setOpen((o) => !o);
+  };
+
   return null;
 }
