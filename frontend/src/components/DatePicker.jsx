@@ -173,5 +173,7 @@ export default function DatePicker({
   const yearNextDisabled = !!maxYM && yearBlockStart + 12 > maxYM.year;
   const yearPrevDisabled = !!minYM && yearBlockStart <= minYM.year;
 
+  const display = value ? value.slice(0, 10).replaceAll('-', '.') : '';
+
   return null;
 }
