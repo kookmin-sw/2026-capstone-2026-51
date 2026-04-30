@@ -218,3 +218,33 @@ export default function DatePicker({
             'absolute z-30 w-[280px] bg-paper border border-ink-200 rounded-md shadow-lg overflow-hidden',
             direction === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'
           )}
+          role="dialog"
+        >
+          {mode === 'day' && (
+            <DayView
+              view={view}
+              value={value}
+              todayIso={todayIso}
+              min={min}
+              max={max}
+              onPrev={goPrevMonth}
+              onNext={goNextMonth}
+              onHeaderClick={() => setMode('month')}
+              onPick={selectDay}
+              disablePrev={dayPrevDisabled}
+              disableNext={dayNextDisabled}
+            />
+          )}
+          {mode === 'month' && (
+            <MonthView
+              view={view}
+              value={value}
+              min={min}
+              max={max}
+              onPrev={goPrevYear}
+              onNext={goNextYear}
+              onHeaderClick={() => setMode('year')}
+              onPick={selectMonth}
+              disablePrev={monthPrevDisabled}
+              disableNext={monthNextDisabled}
+            />
