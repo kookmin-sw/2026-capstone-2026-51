@@ -107,6 +107,7 @@ public class AuthService {
 
         certificateRepository.deleteAllByUser(user);
         experienceRepository.hardDeleteAllByUserId(user.getId());
+        // TODO: experience_star_embeddings 물리 삭제 필요 (FK 제약). experience hard delete 전에 또는 ON DELETE CASCADE로 처리.
         refreshTokenRepository.deleteAllByUserId(user.getId());
         userRepository.deleteById(user.getId());
     }
