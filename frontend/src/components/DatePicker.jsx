@@ -543,3 +543,68 @@ function YearView({
 }
 
 /* ---------- 공통 헤더 ---------- */
+
+function NavHeader({
+  label,
+  onPrev,
+  onNext,
+  onLabelClick,
+  labelAriaLabel,
+  disablePrev,
+  disableNext,
+}) {
+  return (
+    <div className="flex items-center justify-between px-2 py-2 border-b border-ink-150 bg-ink-50">
+      <button
+        type="button"
+        onClick={onPrev}
+        disabled={disablePrev}
+        aria-label="이전"
+        className={cn(
+          'p-1 rounded-md transition-colors',
+          disablePrev
+            ? 'text-ink-300 cursor-not-allowed'
+            : 'text-ink-500 hover:bg-ink-100 hover:text-ink-900'
+        )}
+      >
+        <ChevronLeft size={16} strokeWidth={2} />
+      </button>
+      {onLabelClick ? (
+        // 헤더 텍스트 자체가 dropdown 트리거 — 발견성을 위해 ▾ chevron 동반 + 강조된 hover.
+        <button
+          type="button"
+          onClick={onLabelClick}
+          aria-label={labelAriaLabel}
+          className="group inline-flex items-center gap-1 text-[13.5px] font-bold text-ink-900 tabular-nums px-2 py-1 rounded hover:bg-ink-200 hover:text-primary-800 transition-colors"
+        >
+          {label}
+          <ChevronDown
+            size={14}
+            strokeWidth={2}
+            className="text-ink-400 group-hover:text-primary-700 transition-colors"
+          />
+        </button>
+      ) : (
+        <div className="text-[13.5px] font-bold text-ink-900 tabular-nums px-2 py-1">
+          {label}
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={disableNext}
+        aria-label="다음"
+        className={cn(
+          'p-1 rounded-md transition-colors',
+          disableNext
+            ? 'text-ink-300 cursor-not-allowed'
+            : 'text-ink-500 hover:bg-ink-100 hover:text-ink-900'
+        )}
+      >
+        <ChevronRight size={16} strokeWidth={2} />
+      </button>
+    </div>
+  );
+}
+
+/* ---------- 유틸 ---------- */
