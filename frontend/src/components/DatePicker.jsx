@@ -608,3 +608,9 @@ function NavHeader({
 }
 
 /* ---------- 유틸 ---------- */
+
+function fmtIso(year, monthZeroBased, day) {
+  return `${year}-${String(monthZeroBased + 1).padStart(2, '0')}-${String(
+    day
+  ).padStart(2, '0')}`;
+}
