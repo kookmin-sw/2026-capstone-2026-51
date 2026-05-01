@@ -395,3 +395,85 @@ function DayView({
     </>
   );
 }
+
+function MonthView({
+  view,
+  value,
+  min,
+  max,
+  onPrev,
+  onNext,
+  onHeaderClick,
+  onPick,
+  disablePrev,
+  disableNext,
+}) {
+  const months = [
+    '1월',
+    '2월',
+    '3월',
+    '4월',
+    '5월',
+    '6월',
+    '7월',
+    '8월',
+    '9월',
+    '10월',
+    '11월',
+    '12월',
+  ];
+  const selectedYM = value ? value.split('-').slice(0, 2).map(Number) : null;
+  const selectedSameYear = selectedYM && selectedYM[0] === view.year;
+  const today = new Date();
+  const isViewYearCurrent = view.year === today.getFullYear();
+
+  // 월 단위 disabled 판정 — 해당 월의 마지막 날이 min 보다 작으면 전체 disabled, 첫 날이 max 보다 크면 전체 disabled
+  const isMonthDisabled = (m) => {
+    const firstIso = fmtIso(view.year, m, 1);
+    const lastDay = new Date(view.year, m + 1, 0).getDate();
+    const lastIso = fmtIso(view.year, m, lastDay);
+    if (max && firstIso > max) return true;
+    if (min && lastIso < min) return true;
+    return false;
+  };
+
+  return (
+    <>
+      <NavHeader
+        label={`${view.year}년`}
+        onPrev={onPrev}
+        onNext={onNext}
+        onLabelClick={onHeaderClick}
+        labelAriaLabel="연도 선택"
+        disablePrev={disablePrev}
+        disableNext={disableNext}
+      />
+      <div className="grid grid-cols-4 gap-2 p-3">
+        {months.map((label, m) => {
+          const isSelected = selectedSameYear && selectedYM[1] - 1 === m;
+          const isCurrent = isViewYearCurrent && today.getMonth() === m;
+          const isDisabled = isMonthDisabled(m);
+          return (
+            <button
+              key={m}
+              type="button"
+              disabled={isDisabled}
+              onClick={() => onPick(m)}
+              className={cn(
+                'h-10 rounded-md text-[13px] font-semibold tabular-nums transition-colors',
+                isSelected
+                  ? 'bg-primary-600 text-white'
+                  : isCurrent
+                    ? 'bg-primary-50 text-primary-800 hover:bg-primary-100'
+                    : !isDisabled && 'text-ink-800 hover:bg-ink-100',
+                isDisabled && 'text-ink-300 cursor-not-allowed'
+              )}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </>
+  );
+}
