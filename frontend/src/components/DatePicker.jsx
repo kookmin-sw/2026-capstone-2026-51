@@ -300,3 +300,41 @@ export default function DatePicker({
     </div>
   );
 }
+
+/* ---------- Views ---------- */
+
+function DayView({
+  view,
+  value,
+  todayIso,
+  min,
+  max,
+  onPrev,
+  onNext,
+  onHeaderClick,
+  onPick,
+  disablePrev,
+  disableNext,
+}) {
+  const cells = useMemo(() => {
+    const { year, month } = view;
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const arr = [];
+    for (let i = 0; i < firstDay; i++) arr.push(null);
+    for (let d = 1; d <= daysInMonth; d++) arr.push(d);
+    while (arr.length < 42) arr.push(null);
+    return arr;
+  }, [view]);
+
+  return (
+    <>
+      <NavHeader
+        label={`${view.year}년 ${String(view.month + 1).padStart(2, '0')}월`}
+        onPrev={onPrev}
+        onNext={onNext}
+        onLabelClick={onHeaderClick}
+        labelAriaLabel="연·월 선택"
+        disablePrev={disablePrev}
+        disableNext={disableNext}
+      />
