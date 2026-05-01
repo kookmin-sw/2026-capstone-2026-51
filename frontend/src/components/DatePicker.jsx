@@ -338,3 +338,60 @@ function DayView({
         disablePrev={disablePrev}
         disableNext={disableNext}
       />
+
+      {/* 요일 헤더 */}
+      <div className="grid grid-cols-7 px-2 pt-2 pb-1 text-[11px] text-ink-500">
+        {['일', '월', '화', '수', '목', '금', '토'].map((w, i) => (
+          <div
+            key={w}
+            className={cn(
+              'text-center font-semibold',
+              i === 0 && 'text-red-500',
+              i === 6 && 'text-primary-700'
+            )}
+          >
+            {w}
+          </div>
+        ))}
+      </div>
+
+      {/* 날짜 셀 */}
+      <div className="grid grid-cols-7 px-2 pb-2 gap-y-0.5">
+        {cells.map((d, idx) => {
+          if (d == null) return <div key={idx} />;
+          const iso = fmtIso(view.year, view.month, d);
+          const isSelected = iso === value;
+          const isToday = iso === todayIso;
+          const isOutOfMin = min && iso < min;
+          const isOutOfMax = max && iso > max;
+          const isDisabled = isOutOfMin || isOutOfMax;
+          const dow = new Date(view.year, view.month, d).getDay();
+          return (
+            <button
+              key={idx}
+              type="button"
+              disabled={isDisabled}
+              onClick={() => onPick(view.year, view.month, d)}
+              className={cn(
+                'h-8 rounded-md text-[12.5px] tabular-nums transition-colors',
+                isSelected
+                  ? 'bg-primary-600 text-white font-bold'
+                  : isToday
+                    ? 'bg-primary-50 text-primary-800 font-semibold hover:bg-primary-100'
+                    : !isDisabled &&
+                      (dow === 0
+                        ? 'text-red-500 hover:bg-ink-100'
+                        : dow === 6
+                          ? 'text-primary-700 hover:bg-ink-100'
+                          : 'text-ink-800 hover:bg-ink-100'),
+                isDisabled && 'text-ink-300 cursor-not-allowed'
+              )}
+            >
+              {d}
+            </button>
+          );
+        })}
+      </div>
+    </>
+  );
+}
