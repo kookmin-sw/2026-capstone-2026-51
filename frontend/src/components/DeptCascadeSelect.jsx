@@ -1,0 +1,33 @@
+import { useMemo, useState } from 'react';
+import Combobox from './Combobox';
+import { KOOKMIN_DEPT_OPTIONS, KOOKMIN_COLLEGES } from '../lib/enums';
+
+/**
+ * 단과대 → 학부학과 2단계 cascade. 각 단계는 검색 가능한 Combobox.
+ *
+ * Props:
+ *  - value: 백엔드 직렬화 값(예: "공과대학 소프트웨어학과") 또는 '' (미선택).
+ *           value 가 들어오면 단과대를 자동으로 매칭해 표시.
+ *  - onChange(v): 학과 최종 선택 시 호출. allowClear 또는 단과대 변경으로 비워질 때 '' 호출.
+ *  - excludeValue?: 학과 옵션에서 제외할 값 (전공/부전공 동일 방지).
+ *  - allowClear?: 학과에 X 버튼 노출 (부전공 같은 옵션에서 사용).
+ *  - hasError?: 에러 시 빨간 보더.
+ *  - departmentPlaceholder?: 학과 콤보 placeholder 커스텀.
+ *
+ * 동작:
+ *  - 단과대 변경 시 학과는 자동으로 비움 (cascade).
+ *  - 외부 value 가 있으면 단과대 = 매칭 단과대(파생값). value 가 없을 때만 사용자
+ *    interim 선택(pendingCollege)으로 단과대를 표시. → useEffect 동기화 불필요.
+ */
+export default function DeptCascadeSelect({
+  value,
+  onChange,
+  excludeValue,
+  allowClear = false,
+  hasError = false,
+  departmentPlaceholder,
+}) {
+  // 외부 value 에 맞는 단과대 (파생값)
+
+  return null;
+}
