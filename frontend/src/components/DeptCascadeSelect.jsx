@@ -56,5 +56,29 @@ export default function DeptCascadeSelect({
     if (value) onChange('');
   };
 
-  return null;
+  return (
+    <div className="grid gap-2">
+      <Combobox
+        value={college}
+        onChange={onCollegeChange}
+        options={collegeOptions}
+        placeholder="단과대 선택"
+        searchPlaceholder="단과대 검색"
+        hasError={hasError && !college}
+      />
+      <Combobox
+        value={value || ''}
+        onChange={onChange}
+        options={deptOptions}
+        placeholder={
+          departmentPlaceholder ??
+          (college ? '학부·학과 선택' : '단과대를 먼저 선택')
+        }
+        searchPlaceholder="학과 검색"
+        disabled={!college}
+        hasError={hasError && !!college && !value}
+        allowClear={allowClear}
+      />
+    </div>
+  );
 }
