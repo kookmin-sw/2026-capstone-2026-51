@@ -3,6 +3,8 @@ package com.github.logi.domain.essay.entity;
 import com.github.logi.domain.user.entity.User;
 import com.github.logi.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,4 +31,7 @@ public class Essay extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "progress", length = 20, nullable = false)
     private Progress progress;
+
+    @OneToMany(mappedBy = "essay", fetch = FetchType.LAZY)
+    private List<EssayQuestion> questions = new ArrayList<>();
 }
