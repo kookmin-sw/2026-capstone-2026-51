@@ -1,7 +1,10 @@
 package com.github.logi.domain.essay.entity;
 
+import com.github.logi.domain.experience.entity.Experience;
 import com.github.logi.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +27,12 @@ public class EssayQuestion extends BaseEntity {
 
     @Column(name = "response", columnDefinition = "TEXT", nullable = false)
     private String response;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "essay_question_experiences",
+            joinColumns = @JoinColumn(name = "question_id"),
+            inverseJoinColumns = @JoinColumn(name = "experience_id")
+    )
+    private List<Experience> experiences = new ArrayList<>();
 }
