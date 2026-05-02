@@ -142,27 +142,138 @@ export default function SeniorRoadmapCard({
   );
 }
 
-function SeniorMilestone({ item }) {
-  const color = CAT_COLORS[item.cat] || '#6B7280';
-  const label = CAT_LABELS[item.cat] || '';
+function SeniorTabs({ graduates, idx, setIdx }) {
   return (
     <div
-      className="rounded-md border border-ink-150 bg-paper px-2 py-1.5"
-      style={{ borderLeft: `3px solid ${color}` }}
-      title={`${item.title} · ${item.date}`}
+      className="flex items-center gap-1 -ml-1"
+      role="tablist"
+      aria-label="선배 선택"
     >
-      <div className="flex items-center gap-1 mb-0.5">
-        <span
-          className="text-[9px] font-semibold uppercase tracking-wide"
-          style={{ color }}
-        >
-          {label}
-        </span>
-      </div>
-      <div className="text-[11px] font-semibold text-ink-800 truncate">
-        {item.title}
-      </div>
-      <div className="text-[10px] text-ink-500 truncate">{item.detail}</div>
+      {graduates.map((_, i) => {
+        const active = i === idx;
+        return (
+          <button
+            key={i}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => setIdx(i)}
+            className={
+              'px-2 py-1 text-[12.5px] rounded transition-colors ' +
+              (active
+                ? 'font-semibold text-ink-900 underline underline-offset-[6px] decoration-2 decoration-sidebar-bg'
+                : 'text-ink-500 hover:text-ink-800')
+            }
+          >
+            선배 {i + 1}
+          </button>
+        );
+      })}
     </div>
   );
+}
+
+function SeniorMilestone({ item }) {
+  const color = CAT_COLORS[item.cat] || '#6B7280';
+  return (
+    <div
+      className="rounded-md border border-ink-150 bg-paper px-2 py-1.5 hover:border-ink-300 transition-colors"
+      title={`${item.title} · ${item.date}`}
+    >
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <span
+          className="w-1.5 h-1.5 rounded-full shrink-0"
+          style={{ backgroundColor: color }}
+          aria-hidden
+        />
+        <div className="text-[11px] font-semibold text-ink-800 truncate">
+          {item.title}
+        </div>
+      </div>
+      <div className="text-[10px] text-ink-500 truncate">{item.date}</div>
+    </div>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <section className="card animate-pulse">
+      <div className="h-4 w-24 bg-ink-100 rounded mb-2" />
+      <div className="h-3 w-40 bg-ink-100 rounded mb-5" />
+      <div className="grid grid-cols-8 gap-1">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="flex flex-col items-center gap-2">
+            <div className="h-3 w-8 bg-ink-100 rounded" />
+            <div className="w-3 h-3 bg-ink-100 rounded-full" />
+            <div className="h-12 w-full bg-ink-100 rounded" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function NoticeCard({ title, sub, onRetry }) {
+  return (
+    <section className="card text-center py-8">
+      <h2 className="text-[14px] font-bold text-ink-900 mb-1">{title}</h2>
+      <p className="text-[12.5px] text-ink-500 mb-4 break-keep">{sub}</p>
+      {onRetry && (
+        <button type="button" onClick={onRetry} className="btn-default btn-sm">
+          다시 시도
+        </button>
+      )}
+    </section>
+  );
+}
+
+/* ---------- 헬퍼 ---------- */
+
+/** y, m → (baseY, baseH) 기준 학기 인덱스. 1학기=1~6월, 2학기=7~12월. */
+function semIndex(baseY, baseH, y, m) {
+  const h = m <= 6 ? 1 : 2;
+  return (y - baseY) * 2 + (h - baseH);
+}
+
+/** 마일스톤 배열 → 학기 축 자동 생성. baseY 가 1학년 가정으로 라벨링. */
+function buildSemestersFrom(milestones) {
+  if (!milestones.length) return [];
+  let minY = milestones[0].y;
+  let minH = milestones[0].m <= 6 ? 1 : 2;
+  let maxY = minY;
+  let maxH = minH;
+  milestones.forEach(({ y, m }) => {
+    const h = m <= 6 ? 1 : 2;
+    if (y < minY || (y === minY && h < minH)) {
+      minY = y;
+      minH = h;
+    }
+    if (y > maxY || (y === maxY && h > maxH)) {
+      maxY = y;
+      maxH = h;
+    }
+  });
+  const count = (maxY - minY) * 2 + (maxH - minH) + 1;
+  const sems = [];
+  for (let i = 0; i < count; i++) {
+    const yearOffset = Math.floor((i + (minH - 1)) / 2);
+    const h = ((i + (minH - 1)) % 2) + 1;
+    const grade = yearOffset + 1;
+    const y = minY + yearOffset;
+    sems.push({
+      id: `${grade}-${h}-${y}`,
+      y,
+      h,
+      label: `${grade}-${h}`,
+      sub: `'${String(y).slice(2)}-${h}`,
+    });
+  }
+  return sems;
+}
+
+/** 'YYYY-MM-DD' → 'YY.MM' */
+function shortYM(d) {
+  if (!d) return '—';
+  const [y, m] = d.split('-');
+  return `${y.slice(2)}.${m}`;
 }
