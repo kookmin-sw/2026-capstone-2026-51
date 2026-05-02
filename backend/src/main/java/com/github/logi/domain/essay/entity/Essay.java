@@ -25,8 +25,8 @@ public class Essay extends BaseEntity {
     @Column(name = "global_req", columnDefinition = "TEXT", nullable = false)
     private String globalReq;
 
-    @Column(name = "job", length = 100, nullable = false)
-    private String job;
+    @Column(name = "wish_job", length = 100, nullable = false)
+    private String wishJob;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "progress", length = 20, nullable = false)
