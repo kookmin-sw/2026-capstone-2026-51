@@ -140,7 +140,7 @@ export default function PeersOrb({
     const keyLight = new THREE.DirectionalLight(0xffffff, 0.9);
     keyLight.position.set(-4, 6, 5);
     scene.add(keyLight);
-    const rimLight = new THREE.DirectionalLight(0xc7d2fe, 0.4);
+    const rimLight = new THREE.DirectionalLight(0xbfdbfe, 0.4);
     rimLight.position.set(5, -3, 4);
     scene.add(rimLight);
     const topGlow = new THREE.PointLight(0xffffff, 0.7, 12);
