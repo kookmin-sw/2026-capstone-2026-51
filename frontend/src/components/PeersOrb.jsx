@@ -512,65 +512,134 @@ export default function PeersOrb({
           <circle cx="12" cy="8" r="4" />
           <path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
         </svg>
-        <div>
-          <h2 className="text-[16px] font-bold text-ink-900 leading-tight">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-[15px] font-bold text-ink-900 leading-tight">
             {title}
           </h2>
-          <div className="text-[12px] text-ink-500 mt-1">{sub}</div>
+          <div className="text-[11px] text-ink-500 mt-0.5">{sub}</div>
         </div>
+        {onExpand && (
+          <button
+            type="button"
+            onClick={onExpand}
+            aria-label="크게 보기"
+            title="크게 보기"
+            className="shrink-0 grid place-items-center w-7 h-7 rounded-md text-ink-500 hover:text-ink-900 hover:bg-ink-100 transition-colors"
+          >
+            <Maximize2 size={14} strokeWidth={2} />
+          </button>
+        )}
       </div>
 
       {webglOK ? (
         <>
           <div
             ref={wrapRef}
-            className="w-full aspect-square relative rounded-lg overflow-hidden mt-4"
+            className="w-full aspect-square relative rounded-lg overflow-hidden mt-2"
             style={{
-              background:
-                'radial-gradient(ellipse at center, #ffffff 0%, #f9fafb 70%, #f3f4f6 100%)',
-              maxWidth: 560,
+              background: '#ffffff',
+              maxWidth: chartMaxWidth,
               marginLeft: 'auto',
               marginRight: 'auto',
             }}
           />
-          <p className="text-center text-[11px] text-ink-400 mt-1.5 tracking-wide">
-            ↻ 드래그해서 돌려보세요
+          <p className="text-center text-[11px] text-ink-400 mt-1 tracking-wide">
+            ↻ 드래그해서 돌려보세요 · 색칸을 누르면 색을 바꿀 수 있어요
           </p>
         </>
       ) : (
-        <PeersFallbackChart axes={axes} />
+        <PeersFallbackChart
+          axes={axes}
+          showMe={showMe}
+          showPeers={showPeers}
+          showSeniors={showSeniors}
+          colors={colors}
+        />
       )}
-      <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-ink-150">
-        <span className="flex items-center gap-2 text-[13px] font-medium text-ink-700">
-          <span
-            className="w-3.5 h-3.5 rounded"
-            style={{
-              background: 'linear-gradient(135deg, #3b82f6, #1e40af)',
-              boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)',
-            }}
-          />
-          나
-        </span>
-        <span className="flex items-center gap-2 text-[13px] font-medium text-ink-700">
-          <span
-            className="w-3.5 h-3.5 rounded"
-            style={{
-              background: 'linear-gradient(135deg, #c4b5fd, #7c3aed)',
-              boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)',
-            }}
-          />
-          동기 평균
-        </span>
+      <div className="flex flex-wrap justify-center gap-1.5 mt-2 pt-3 border-t border-ink-150">
+        <ToggleChip
+          label="나"
+          active={showMe}
+          onToggle={() => setShowMe((v) => !v)}
+          color={colors.me}
+          onColorChange={setColor('me')}
+        />
+        <ToggleChip
+          label="동기 평균"
+          active={showPeers}
+          onToggle={() => setShowPeers((v) => !v)}
+          color={colors.peers}
+          onColorChange={setColor('peers')}
+        />
+        <ToggleChip
+          label="선배 평균"
+          active={showSeniors}
+          onToggle={() => setShowSeniors((v) => !v)}
+          color={colors.seniors}
+          onColorChange={setColor('seniors')}
+        />
       </div>
     </section>
   );
 }
 
+function applyColor(group, color) {
+  if (!group) return;
+  group.children.forEach((child) => {
+    if (child.material?.color) child.material.color.set(color);
+  });
+}
+
+/**
+ * 범례 칩. swatch(왼쪽 색칸) 는 클릭 시 native color picker 를 열고, 라벨 영역은
+ * 메쉬 가시성 토글. 두 영역을 분리해 클릭 의도가 섞이지 않게 함.
+ *  - active=false 면 swatch opacity 다운 + 칩 muted 로 숨김 표시.
+ */
+function ToggleChip({ label, active, onToggle, color, onColorChange }) {
+  return (
+    <div
+      className={cn(
+        'inline-flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full text-[12.5px] font-medium transition-colors',
+        active
+          ? 'bg-ink-50 border border-ink-200 text-ink-800'
+          : 'border border-ink-150 text-ink-400'
+      )}
+    >
+      <label
+        className={cn(
+          'w-3.5 h-3.5 rounded cursor-pointer transition-opacity ring-1 ring-black/5',
+          active ? '' : 'opacity-30'
+        )}
+        style={{
+          background: color,
+          boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)',
+        }}
+        title={`${label} 색 변경`}
+      >
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => onColorChange(e.target.value)}
+          className="sr-only"
+          aria-label={`${label} 색`}
+        />
+      </label>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-pressed={active}
+        className="leading-none hover:text-ink-900"
+      >
+        {label}
+      </button>
+    </div>
+  );
+}
+
 /**
  * WebGL 미지원/실패 시 단순 막대 차트 fallback.
- * 5축 데이터(label/me/peers) 그대로 표시 — 시연 안전망.
  */
-function PeersFallbackChart({ axes }) {
+function PeersFallbackChart({ axes, showMe, showPeers, showSeniors, colors }) {
   return (
     <div className="mt-4 grid gap-3 px-2 pb-2">
       {axes.map((a) => (
