@@ -201,17 +201,12 @@ export default function PeersOrb({
     }
 
     /* ===== Grid: 동심 N각형 + 축선 ===== */
-    const gridMat = new THREE.LineBasicMaterial({
-      color: 0xc7d2fe,
-      transparent: true,
-      opacity: 0.55,
-    });
-    const gridStrong = new THREE.LineBasicMaterial({
-      color: 0x94a3b8,
-      transparent: true,
-      opacity: 0.7,
-    });
-
+    const polygonOpacityFor = (level) => {
+      if (level === 1) return 0.55;
+      if (level === 0.75) return 0.4;
+      if (level === 0.5) return 0.35;
+      return 0.25;
+    };
     [0.25, 0.5, 0.75, 1].forEach((level) => {
       const pts = [];
       for (let i = 0; i <= N; i++) {
