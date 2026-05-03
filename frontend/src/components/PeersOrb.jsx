@@ -469,14 +469,37 @@ export default function PeersOrb({
       dom.removeEventListener('pointerup', onUp);
       dom.removeEventListener('pointercancel', onUp);
       dom.removeEventListener('pointerleave', onUp);
+      myMeshRef.current = null;
+      peersMeshRef.current = null;
+      seniorsMeshRef.current = null;
       renderer.dispose();
       wrap.removeChild(dom);
     };
+    // showMe/showPeers/showSeniors/colors 는 빌드 시 초기 값으로만 사용 — 이후 변화는
+    // 별도 effect 가 ref 통해 직접 갱신해 scene 재구축 회피.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [axes, webglOK]);
 
+  // 토글 — scene 재구축 없이 mesh.visible 만 갱신.
+  useEffect(() => {
+    if (myMeshRef.current) myMeshRef.current.visible = showMe;
+    if (peersMeshRef.current) peersMeshRef.current.visible = showPeers;
+    if (seniorsMeshRef.current) seniorsMeshRef.current.visible = showSeniors;
+  }, [showMe, showPeers, showSeniors]);
+
+  // 색 — scene 재구축 없이 material.color 만 갱신.
+  useEffect(() => {
+    applyColor(myMeshRef.current, colors.me);
+    applyColor(peersMeshRef.current, colors.peers);
+    applyColor(seniorsMeshRef.current, colors.seniors);
+  }, [colors]);
+
+  const setColor = (key) => (value) =>
+    setColors((prev) => ({ ...prev, [key]: value }));
+
   return (
-    <section className="card">
-      <div className="flex items-start gap-2 mb-1">
+    <section className={embedded ? '' : 'card !p-4'}>
+      <div className="flex items-start gap-2">
         <svg
           width="18"
           height="18"
