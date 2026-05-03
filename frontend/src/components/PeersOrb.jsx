@@ -166,7 +166,6 @@ export default function PeersOrb({
     );
     orbGroup.add(sphere);
 
-    // 와이어프레임 — 유리 결
     orbGroup.add(
       new THREE.Mesh(
         new THREE.SphereGeometry(SPHERE_R + 0.003, 24, 16),
