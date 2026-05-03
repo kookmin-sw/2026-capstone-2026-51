@@ -214,14 +214,21 @@ export default function PeersOrb({
         const r = CHART_R * level;
         pts.push(new THREE.Vector3(r * Math.cos(a), r * Math.sin(a), 0));
       }
-      const mat =
-        level === 1 || level === 0.5 ? gridStrong.clone() : gridMat.clone();
-      if (level === 0.5) mat.color.setHex(0xcbd5e1);
+      const mat = new THREE.LineBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: polygonOpacityFor(level),
+      });
       orbGroup.add(
         new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat)
       );
     });
 
+    const axisMat = new THREE.LineBasicMaterial({
+      color: 0x64748b,
+      transparent: true,
+      opacity: 0.45,
+    });
     for (let i = 0; i < N; i++) {
       const a = angleAt(i);
       const pts = [
