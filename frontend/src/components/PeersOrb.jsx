@@ -273,8 +273,11 @@ export default function PeersOrb({
       orbGroup.add(sp);
     });
 
-    /* ===== Data shapes (입체 polygon) ===== */
-    const buildDataMesh = (data, color, opacity, depth, zOffset) => {
+    /* ===== Data shapes (3 개 prism, z=0 평면 중심으로 양쪽 대칭 extrude) ===== */
+    // 그리드 평면(z=0) 을 가운데 두고 prism 이 +z / -z 양쪽으로 반씩 솟음 — "샌드위치"
+    // 효과 (앞에서 봐도 튀어나오고 뒤로 180° 돌려도 똑같이 튀어나옴). depth 만 단계화해
+    // 작은 폴리곤이 더 두껍게 → 회전 시 작은 게 양쪽으로 더 빼꼼히 보임.
+    const buildDataMesh = (data, color, opacity, edgeOpacity, depth) => {
       const shape = new THREE.Shape();
       for (let i = 0; i < N; i++) {
         const p = pointAt(i, data[i]);
