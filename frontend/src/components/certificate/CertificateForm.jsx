@@ -63,5 +63,22 @@ export default function CertificateForm({
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const onToggleExpiration = (checked) => {
+    setForm((f) => ({
+      ...f,
+      hasExpiration: checked,
+      expirationDate: checked ? f.expirationDate : '',
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    const errs = validate(form);
+    if (Object.keys(errs).length > 0) return;
+    if (isPending) return;
+    onSubmit(toBody(form));
+  };
+
   return null;
 }
