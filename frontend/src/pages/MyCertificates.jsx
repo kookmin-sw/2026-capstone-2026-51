@@ -19,6 +19,12 @@ import { toast } from '../store/useToast';
  *  - 삭제는 모달 확인 — "삭제하시겠습니까?" 팝업에서 [취소 / 삭제] 선택.
  */
 export default function MyCertificates() {
+  const [pendingDel, setPendingDel] = useState(null); // null | certificate item
+  const list = useCertificates();
+  const del = useDeleteCertificate();
+  const nav = useNavigate();
+
+  const items = useMemo(() => list.data || [], [list.data]);
 
   return null;
 }
