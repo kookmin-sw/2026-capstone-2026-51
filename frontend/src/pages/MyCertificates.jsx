@@ -127,3 +127,108 @@ export default function MyCertificates() {
 }
 
 /* ---------- 행 ---------- */
+
+function CertRow({ index, item, onEdit, onDelete }) {
+  const meta = [
+    item.issuingOrganization,
+    item.getDate && `취득 ${fmtDate(item.getDate)}`,
+    item.expirationDate
+      ? `유효 ${fmtDate(item.expirationDate)}`
+      : item.getDate && '기간 제한 없음',
+    item.certificateCode && `발급 ${item.certificateCode}`,
+  ].filter(Boolean);
+
+  return (
+    <li className="px-4 sm:px-5 py-2.5 hover:bg-ink-50/60 transition-colors">
+      <div className="flex items-start gap-3">
+        <span className="text-[12.5px] font-semibold text-ink-400 tabular-nums shrink-0 w-6 pt-[3px] text-right">
+          {index}.
+        </span>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[14px] font-semibold text-ink-900 tracking-tight break-keep">
+            {item.certificateName || '(이름 없음)'}
+          </h3>
+          {meta.length > 0 && (
+            <div className="text-[12px] text-ink-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 tabular-nums">
+              {meta.map((m, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5">
+                  {i > 0 && <span className="text-ink-300">·</span>}
+                  <span>{m}</span>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex gap-1 shrink-0">
+          <button type="button" onClick={onEdit} className="btn-ghost btn-sm">
+            <Pencil size={12} strokeWidth={2} />
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className="btn-ghost btn-sm !text-red-600 hover:!bg-red-50"
+          >
+            <Trash2 size={12} strokeWidth={2} />
+          </button>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/* ---------- 상태 ---------- */
+
+function Loading() {
+  return (
+    <ul className="divide-y divide-ink-150">
+      {[0, 1, 2].map((i) => (
+        <li key={i} className="px-4 sm:px-5 py-2.5 animate-pulse">
+          <div className="flex items-start gap-3">
+            <div className="h-3 w-4 bg-ink-100 rounded shrink-0" />
+            <div className="flex-1">
+              <div className="h-3.5 w-1/3 bg-ink-100 rounded mb-1.5" />
+              <div className="h-3 w-2/3 bg-ink-100 rounded" />
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ErrorState({ message, onRetry }) {
+  return (
+    <div className="text-center py-8 px-4">
+      <p className="text-[13px] text-ink-700 mb-3 break-keep">{message}</p>
+      {onRetry && (
+        <button type="button" onClick={onRetry} className="btn-default">
+          다시 시도
+        </button>
+      )}
+    </div>
+  );
+}
+
+function Empty() {
+  return (
+    <div className="text-center py-10 px-4">
+      <p className="text-[13.5px] font-semibold text-ink-800 mb-1">
+        아직 등록된 자격증이 없어요.
+      </p>
+      <p className="text-[12.5px] text-ink-500 mb-4 break-keep">
+        취득한 자격증을 정리해두면 자소서 추천·통계에 활용됩니다.
+      </p>
+      <Link to="/my-certificates/new" className="btn-primary">
+        <Plus size={13} strokeWidth={2.2} />첫 자격증 추가하기
+      </Link>
+    </div>
+  );
+}
+
+/* ---------- 유틸 ---------- */
+
+function fmtDate(d) {
+  if (!d) return '';
+  // 백엔드는 ISO 형식 문자열로 줄 가능성 — 안전하게 앞 10자만 사용
+  return d.slice(0, 10).replaceAll('-', '.');
+}
