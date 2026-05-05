@@ -93,5 +93,31 @@ export default function QuestionEditor({
     };
   };
 
+  const handleRecommend = () => {
+    if (!form.question.trim()) {
+      toast.error('문항을 먼저 입력해주세요.');
+      return;
+    }
+    recommend.mutate(
+      { question: form.question.trim() },
+      {
+        onSuccess: (data) => {
+          const list = (data?.relatedExperience || []).map(enrichRel);
+          setRecommendedAll(list);
+          // 4/27 디자인: 상위 2개 자동 활용
+          update(
+            'relatedExperience',
+            list.slice(0, 2).map((r) => ({ experienceId: r.experienceId }))
+          );
+        },
+        onError: (e) => {
+          toast.error(
+            e?.apiMessage || '추천을 가져오지 못했습니다. 다시 시도해주세요.'
+          );
+        },
+      }
+    );
+  };
+
   return null;
 }
