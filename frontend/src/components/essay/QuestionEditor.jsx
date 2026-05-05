@@ -141,6 +141,47 @@ export default function QuestionEditor({
    * 초안 생성. 백엔드 generate 가 questionId 를 요구하므로 저장 안 된 카드는 먼저 placeholder 저장 후 호출.
    * 저장 안 된 카드(없는 questionId)에서 호출 시 자동으로 부분 저장 → questionId 받기 → generate.
    */
+  const handleGenerate = async () => {
+    if (!form.question.trim()) {
+      toast.error('문항을 먼저 입력해주세요.');
+      return;
+    }
+    let qid = form.questionId;
+    if (!qid) {
+      // 빈 응답으로 저장 시도 — `response` 가 minLength:1 이라 placeholder 임시값 보냄
+      try {
+        const r = await createQuestion.mutateAsync({
+          essayId,
+          body: {
+            questionNum,
+            question: form.question.trim(),
+            response: '(작성 예정)',
+            maxLength: form.maxLength,
+            relatedExperience: form.relatedExperience,
+          },
+        });
+        qid = r?.questionId;
+        if (!qid) throw new Error('questionId 응답 누락');
+        update('questionId', qid);
+      } catch (e) {
+        toast.error(
+          e?.apiMessage || '문항 저장에 실패했습니다. 다시 시도해주세요.'
+        );
+        return;
+      }
+    }
+    generate.mutate(
+      { essayId, questionId: qid },
+      {
+        onSuccess: (data) => update('response', data?.response || ''),
+        onError: (e) => {
+          toast.error(
+            e?.apiMessage || '초안 생성에 실패했습니다. 다시 시도해주세요.'
+          );
+        },
+      }
+    );
+  };
 
   return null;
 }
