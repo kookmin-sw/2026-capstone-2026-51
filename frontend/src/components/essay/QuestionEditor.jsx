@@ -79,5 +79,19 @@ export default function QuestionEditor({
   // 추천 결과 캐시 — relatedExperience 외 더 많은 후보를 노출하기 위해 따로 보관
   const [recommendedAll, setRecommendedAll] = useState(null);
 
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const enrichRel = (rel) => {
+    // swagger 는 experienceId 만 보장. title/similarity/reason 이 같이 오면 사용, 없으면 캐시에서 매칭.
+    // reason: 백엔드가 추천 근거 텍스트를 보내주는 경우 노출. 응답 키 후보(reason / recommendReason / why) 모두 받음.
+    const fromCache = expById.get(rel.experienceId);
+    return {
+      experienceId: rel.experienceId,
+      title: rel.experienceTitle || fromCache?.experienceTitle || '(제목 없음)',
+      similarity: rel.similarity ?? null,
+      reason: rel.reason || rel.recommendReason || rel.why || null,
+    };
+  };
+
   return null;
 }
