@@ -213,5 +213,61 @@ export default function QuestionEditor({
     );
   };
 
+  const handleSave = () => {
+    if (!form.question.trim()) {
+      toast.error('문항을 입력해주세요.');
+      return;
+    }
+    if (!form.response.trim()) {
+      toast.error('답변을 입력해주세요.');
+      return;
+    }
+    if (!form.maxLength || form.maxLength < 1) {
+      toast.error('글자수를 입력해주세요.');
+      return;
+    }
+
+    const body = {
+      question: form.question.trim(),
+      response: form.response.trim(),
+      maxLength: form.maxLength,
+      relatedExperience: form.relatedExperience,
+    };
+
+    if (form.questionId) {
+      updateQuestion.mutate(
+        { essayId, questionId: form.questionId, body },
+        {
+          onSuccess: () => {
+            toast.success('문항이 저장되었습니다.');
+            onSaved?.({ ...body, questionId: form.questionId });
+          },
+          onError: (e) => {
+            toast.error(
+              e?.apiMessage || '저장에 실패했습니다. 다시 시도해주세요.'
+            );
+          },
+        }
+      );
+    } else {
+      createQuestion.mutate(
+        {
+          essayId,
+          body: { ...body, questionNum },
+        },
+        {
+          onSuccess: (data) => {
+            const qid = data?.questionId;
+            if (qid) update('questionId', qid);
+            toast.success('문항이 저장되었습니다.');
+            onSaved?.({ ...body, questionNum, questionId: qid });
+          },
+          onError: (e) => {
+            toast.error(
+              e?.apiMessage || '저장에 실패했습니다. 다시 시도해주세요.'
+            );
+          },
+        }
+
   return null;
 }
