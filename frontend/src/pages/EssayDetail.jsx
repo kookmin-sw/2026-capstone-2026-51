@@ -37,6 +37,47 @@ import { toast } from '../store/useToast';
  * 진입 경로: /essays 카드 → /essays/:id (essayId 가 응답에 있을 때만 활성).
  *  목록 응답에 essayId 가 누락되면 진입은 차단되어 본 페이지에 도달 못 함.
  */
+export default function EssayDetail() {
+  const { id } = useParams();
+  const nav = useNavigate();
+  const q = useEssay(id);
+
+  const [editingMeta, setEditingMeta] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const updateMeta = useUpdateEssayMeta();
+  const updateResult = useUpdateEssayResult();
+  const deleteEssay = useDeleteEssay();
+
+  const handleMetaSave = (body) => {
+    updateMeta.mutate(
+      { id, body },
+      {
+        onSuccess: () => {
+          setEditingMeta(false);
+          toast.success('자소서 정보가 수정되었습니다.');
+          q.refetch();
+        },
+        onError: (e) => toast.error(e?.apiMessage || '수정에 실패했습니다.'),
+      }
+    );
+  };
+
+  const handleResult = (progress) => {
+    updateResult.mutate(
+      { id, progress },
+      {
+        onSuccess: () => {
+          toast.success('결과가 반영되었습니다.');
+          q.refetch();
+        },
+        onError: (e) =>
+          toast.error(e?.apiMessage || '결과 반영에 실패했습니다.'),
+      }
+    );
+  };
+
+  const handleDelete = () => {
 
   return null;
 }
