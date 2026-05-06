@@ -498,3 +498,49 @@ export default function QuestionEditor({
         {/* 5. 저장 */}
         <div className="flex justify-end pt-3 border-t border-ink-150">
           <button
+            type="button"
+            onClick={handleSave}
+            disabled={
+              !form.question.trim() || !form.response.trim() || isAnyPending
+            }
+            className="btn-primary"
+          >
+            <Check size={13} strokeWidth={2} />
+            {createQuestion.isPending || updateQuestion.isPending
+              ? '저장 중…'
+              : isExisting
+                ? '문항 수정 저장'
+                : '이 문항 저장'}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 로컬 빌딩블록 ---------- */
+
+function Field({ label, hint, children }) {
+  return (
+    <div className="grid gap-1.5">
+      <label className="text-[12.5px] font-semibold text-ink-700">
+        {label}
+      </label>
+      {children}
+      {hint && <div className="text-[11.5px] text-ink-500 mt-0.5">{hint}</div>}
+    </div>
+  );
+}
+
+/* ---------- 외부에서 새 빈 문항 추가용 헬퍼 ---------- */
+
+export const AddQuestionButton = ({ onClick, disabled }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    className="w-full rounded-md border border-dashed border-ink-200 bg-paper px-4 py-3 text-[13px] text-ink-700 font-semibold hover:bg-ink-50 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+  >
+    <Plus size={14} strokeWidth={2.2} />새 문항 추가
+  </button>
+);
