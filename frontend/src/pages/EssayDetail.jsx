@@ -78,6 +78,56 @@ export default function EssayDetail() {
   };
 
   const handleDelete = () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      setTimeout(() => setConfirmDelete(false), 5000);
+      return;
+    }
+    deleteEssay.mutate(id, {
+      onSuccess: () => {
+        toast.success('자소서를 삭제했습니다.');
+        nav('/essays');
+      },
+      onError: (e) => toast.error(e?.apiMessage || '삭제에 실패했습니다.'),
+    });
+  };
+
+  if (q.isLoading) return <DetailSkeleton />;
+  if (q.isError) {
+    return (
+      <DetailError
+        message={q.error?.apiMessage || '자소서를 불러오지 못했습니다.'}
+        onRetry={() => q.refetch()}
+      />
+    );
+  }
+  const essay = q.data;
+  if (!essay) return null;
+
+  const tone = PROGRESS_TONE[essay.progress] || 'gray';
+  const label = PROGRESS_LABEL[essay.progress] || essay.progress || '작성 중';
+
+  return (
+    <>
+      <Crumbs items={['자소서', '관리', '열람']} />
+
+      {/* 메타 영역 */}
+      <section className="card mb-4">
+        {editingMeta ? (
+          <EssayMetaForm
+            initialValue={{
+              companyName: essay.companyName,
+              wishJob: essay.wishJob,
+              globalReq: essay.globalReq,
+            }}
+            onSubmit={handleMetaSave}
+            onCancel={() => setEditingMeta(false)}
+            isPending={updateMeta.isPending}
+            submitLabel="수정 저장"
+          />
+        ) : (
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
 
   return null;
 }
