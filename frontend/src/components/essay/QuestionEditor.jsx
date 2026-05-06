@@ -438,3 +438,63 @@ export default function QuestionEditor({
             <div className="text-[11.5px] text-red-600 break-keep">
               제한 글자수를 {form.response.length - form.maxLength}자
               초과했어요.
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={!form.question.trim() || isAnyPending}
+            className="btn-default btn-sm"
+          >
+            <Sparkles size={12} strokeWidth={2} />
+            {generate.isPending || createQuestion.isPending
+              ? '초안 생성 중…'
+              : '초안 생성'}
+          </button>
+        </div>
+
+        {/* 4. 재생성 */}
+        {form.questionId && form.response && (
+          <div className="grid gap-2 mt-2 pt-3 border-t border-ink-150">
+            <label className="text-[12.5px] font-semibold text-ink-700">
+              재생성 — 어떻게 수정할까요?
+            </label>
+            <div className="relative">
+              <textarea
+                rows={2}
+                className="field text-[14px] py-2.5 pr-8"
+                placeholder="예: 더 구체적인 수치를 넣어주세요. AI가 작성하지 않은 듯하게."
+                value={regenReq}
+                onChange={(e) => setRegenReq(e.target.value)}
+              />
+              {regenReq && (
+                <button
+                  type="button"
+                  onClick={() => setRegenReq('')}
+                  disabled={isAnyPending}
+                  aria-label="요구사항 비우기"
+                  className="absolute top-1.5 right-1.5 p-1 rounded text-ink-400 hover:text-ink-700 hover:bg-ink-100 transition-colors disabled:opacity-50"
+                >
+                  <XIcon size={14} strokeWidth={2} />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleRegenerate}
+                disabled={!regenReq.trim() || isAnyPending}
+                className="btn-default btn-sm"
+              >
+                <RefreshCw size={12} strokeWidth={2} />
+                {regenerate.isPending ? '재생성 중…' : '다시 생성'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 5. 저장 */}
+        <div className="flex justify-end pt-3 border-t border-ink-150">
+          <button
