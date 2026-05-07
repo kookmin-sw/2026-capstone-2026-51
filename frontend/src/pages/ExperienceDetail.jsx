@@ -118,5 +118,63 @@ export default function ExperienceDetail() {
     <>
       <Crumbs items={['MyPage', '내 경험', '열람']} />
 
-  return null;
-}
+      <header className="flex flex-wrap items-start justify-between gap-3 mb-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-[12px] mb-1.5">
+            <span className="badge-navy">{label}</span>
+            <span className="text-ink-400">·</span>
+            <span className="text-ink-500 tabular-nums">
+              {data.startDate} ~ {data.endDate}
+            </span>
+          </div>
+          <h1 className="text-[22px] font-bold tracking-tight text-ink-900 break-keep">
+            {data.experienceTitle}
+          </h1>
+        </div>
+
+        {mode === 'view' && (
+          <div className="flex gap-2 sm:shrink-0">
+            <button
+              type="button"
+              onClick={() => setMode('edit')}
+              className="btn-default"
+            >
+              <Pencil size={13} strokeWidth={2} />
+              수정
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDelOpen(true)}
+              disabled={del.isPending}
+              className="btn-default !text-red-600 !border-red-200 hover:!bg-red-50"
+            >
+              <Trash2 size={13} strokeWidth={2} />
+              삭제
+            </button>
+          </div>
+        )}
+      </header>
+
+      <Modal
+        open={confirmDelOpen}
+        onClose={() => (del.isPending ? null : setConfirmDelOpen(false))}
+        title="삭제하시겠습니까?"
+        sub={`'${data.experienceTitle || '이 경험'}' 항목이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`}
+        width={420}
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn-default"
+              disabled={del.isPending}
+              onClick={() => setConfirmDelOpen(false)}
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              className="btn-default !text-red-600 !border-red-200 hover:!bg-red-50"
+              disabled={del.isPending}
+              onClick={handleConfirmDelete}
+            >
+              <Trash2 size={13} strokeWidth={2} />
