@@ -33,6 +33,46 @@ import {
  *
  * 첫 "저장" 클릭 후부터 라이브 검증.
  */
+export default function ExperienceForm({
+  initialValue,
+  onSubmit,
+  onCancel,
+  isPending,
+  submitLabel = '저장',
+}) {
+  const [form, setForm] = useState(() => toDraft(initialValue));
+  const [submitted, setSubmitted] = useState(false);
+  const errors = submitted ? validate(form) : {};
+
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const updateStar = (k, v) =>
+    setForm((f) => ({ ...f, star: { ...f.star, [k]: v } }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    const errs = validate(form);
+    if (Object.keys(errs).length > 0) return;
+    if (isPending) return;
+    onSubmit(toBody(form));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="grid gap-5">
+      {/* 카테고리 */}
+      <Section title="카테고리" required error={errors.category}>
+        <div className="flex flex-wrap gap-2">
+          {EXPERIENCE_CATEGORY_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => update('category', opt.value)}
+              className={cn(
+                'px-3.5 py-2 rounded-md text-[13px] font-semibold border transition-colors',
+                form.category === opt.value
+                  ? 'bg-primary-50 border-primary-600 text-primary-800'
+                  : 'bg-paper border-ink-200 text-ink-700 hover:bg-ink-50'
+              )}
 
   return null;
 }
