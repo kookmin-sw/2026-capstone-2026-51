@@ -68,6 +68,66 @@ export default function MyExperience() {
 
       <section className="card !p-0 overflow-hidden">
         {/* 검색창 */}
+        <div className="px-4 sm:px-5 pt-4">
+          <div className="relative">
+            <Search
+              size={14}
+              strokeWidth={2}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none"
+            />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="제목 검색"
+              className="field text-[14px] py-2.5 pl-9"
+            />
+          </div>
+        </div>
+
+        {/* 필터 탭 */}
+        <div className="flex flex-wrap gap-2 px-4 sm:px-5 py-3">
+          <FilterChip
+            active={filter === 'all'}
+            onClick={() => setFilter('all')}
+            label="모두"
+            count={items.length}
+          />
+          {EXPERIENCE_CATEGORY_OPTIONS.map((opt) => {
+            const c = items.filter(
+              (e) =>
+                EXPERIENCE_CATEGORY_TO_FRONT[e.experienceCategory] === opt.value
+            ).length;
+            return (
+              <FilterChip
+                key={opt.value}
+                active={filter === opt.value}
+                onClick={() => setFilter(opt.value)}
+                label={opt.label}
+                count={c}
+              />
+            );
+          })}
+        </div>
+
+        <div className="border-t border-ink-150" />
+
+        {/* 본문 */}
+        {exps.isLoading ? (
+          <Loading />
+        ) : exps.isError ? (
+          <ErrorState
+            message={
+              exps.error?.apiMessage || '경험 목록을 불러오지 못했습니다.'
+            }
+            onRetry={() => exps.refetch()}
+          />
+        ) : filtered.length === 0 ? (
+          <Empty
+            isFiltered={isFiltered}
+            isEmpty={items.length === 0}
+            onClear={() => {
+              setFilter('all');
+              setQuery('');
 
   return null;
 }
