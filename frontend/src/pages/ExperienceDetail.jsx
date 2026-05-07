@@ -68,6 +68,55 @@ export default function ExperienceDetail() {
   }
 
   const data = exp.data;
+  if (!data) {
+    return (
+      <>
+        <Crumbs items={['MyPage', '내 경험', '열람']} />
+        <div className="card text-center py-8 text-[13px] text-ink-500">
+          응답이 비어있습니다.
+        </div>
+      </>
+    );
+  }
+
+  const cat = EXPERIENCE_CATEGORY_TO_FRONT[data.experienceCategory];
+  const label = EXPERIENCE_CATEGORY_LABEL[cat] || data.experienceCategory;
+
+  const handleSave = (body) => {
+    update.mutate(
+      { id, body },
+      {
+        onSuccess: () => {
+          toast.success('경험을 저장했어요.');
+          setMode('view');
+        },
+        onError: (e) => {
+          toast.error(
+            e?.apiMessage || '저장 중 오류가 발생했습니다. 다시 시도해주세요.'
+          );
+        },
+      }
+    );
+  };
+
+  const handleConfirmDelete = () => {
+    del.mutate(id, {
+      onSuccess: () => {
+        toast.success('경험을 삭제했어요.');
+        setConfirmDelOpen(false);
+        nav('/my-experience');
+      },
+      onError: (e) => {
+        toast.error(
+          e?.apiMessage || '삭제 중 오류가 발생했습니다. 다시 시도해주세요.'
+        );
+      },
+    });
+  };
+
+  return (
+    <>
+      <Crumbs items={['MyPage', '내 경험', '열람']} />
 
   return null;
 }
