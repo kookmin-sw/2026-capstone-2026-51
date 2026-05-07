@@ -34,56 +34,58 @@ export default function MyRoadmapCard() {
         <Legend />
       </header>
 
-      {/* Track */}
-      <div className="relative pt-2 pb-1">
-        {/* 가로 baseline */}
-        <div className="absolute left-0 right-0 top-[34px] h-px bg-ink-200" />
+      {/* Track — 좁은 화면에서는 가로 스크롤로 8학기 칼럼 유지 */}
+      <div className="overflow-x-auto -mx-1 px-1">
+        <div className="relative pt-2 pb-1 min-w-[640px]">
+          {/* 가로 baseline */}
+          <div className="absolute left-0 right-0 top-[34px] h-px bg-ink-200" />
 
-        <div className="grid grid-cols-8 gap-1">
-          {SEMESTERS.map((s, i) => {
-            const isToday = i === TODAY_SEM_INDEX;
-            const isPast = i < TODAY_SEM_INDEX;
-            return (
-              <div key={s.id} className="flex flex-col items-center">
-                {/* 학기 라벨 */}
-                <div
-                  className={
-                    'text-[11px] font-semibold mb-2 ' +
-                    (isToday ? 'text-primary-800' : 'text-ink-500')
-                  }
-                >
-                  {s.label}
-                </div>
-
-                {/* 점 위치 (baseline) */}
-                <div className="relative h-3 w-full flex justify-center">
-                  <span
+          <div className="grid grid-cols-8 gap-1">
+            {SEMESTERS.map((s, i) => {
+              const isToday = i === TODAY_SEM_INDEX;
+              const isPast = i < TODAY_SEM_INDEX;
+              return (
+                <div key={s.id} className="flex flex-col items-center">
+                  {/* 학기 라벨 */}
+                  <div
                     className={
-                      'block w-2.5 h-2.5 rounded-full border-2 ' +
-                      (isToday
-                        ? 'bg-primary-600 border-primary-200'
-                        : isPast
-                          ? 'bg-ink-300 border-paper'
-                          : 'bg-paper border-ink-300')
+                      'text-[11px] font-semibold mb-2 ' +
+                      (isToday ? 'text-primary-800' : 'text-ink-500')
                     }
-                  />
-                </div>
+                  >
+                    {s.label}
+                  </div>
 
-                {/* 마일스톤 stack */}
-                <div className="mt-3 flex flex-col items-stretch gap-1.5 w-full">
-                  {buckets[i].map((m, j) => (
-                    <Milestone key={j} item={m} />
-                  ))}
-                  {buckets[i].length === 0 && (
-                    <div className="h-1" aria-hidden />
-                  )}
-                </div>
+                  {/* 점 위치 (baseline) */}
+                  <div className="relative h-3 w-full flex justify-center">
+                    <span
+                      className={
+                        'block w-2.5 h-2.5 rounded-full border-2 ' +
+                        (isToday
+                          ? 'bg-primary-600 border-primary-200'
+                          : isPast
+                            ? 'bg-ink-300 border-paper'
+                            : 'bg-paper border-ink-300')
+                      }
+                    />
+                  </div>
 
-                {/* 보조 라벨 */}
-                <div className="text-[10px] text-ink-400 mt-2">{s.sub}</div>
-              </div>
-            );
-          })}
+                  {/* 마일스톤 stack */}
+                  <div className="mt-3 flex flex-col items-stretch gap-1.5 w-full">
+                    {buckets[i].map((m, j) => (
+                      <Milestone key={j} item={m} />
+                    ))}
+                    {buckets[i].length === 0 && (
+                      <div className="h-1" aria-hidden />
+                    )}
+                  </div>
+
+                  {/* 보조 라벨 */}
+                  <div className="text-[10px] text-ink-400 mt-2">{s.sub}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

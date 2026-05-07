@@ -49,6 +49,19 @@ Logi 프론트엔드 — 국민대학교 자소서 플랫폼. React 19 + Vite 8 
 
 - `@` → `./src` (vite.config.js). 기존 파일들은 거의 다 상대 경로 import — 둘 다 작동, 새 파일에서 어느 쪽이든 OK.
 
+### Responsive
+
+기준 브레이크포인트 — 사이드바 토글의 분기점이 핵심:
+
+- **`< lg` (1024px 미만)**: `Layout` 이 햄버거 헤더 노출, `Sidebar` 는 화면 밖 drawer (`fixed -translate-x-full`). drawer 는 햄버거 / 오버레이 클릭 / 사이드바 안의 X 버튼 / NavLink 클릭(`onClose` props) 으로 닫힘.
+- **`lg` 이상**: 사이드바 정적 칼럼 (`lg:static`), 햄버거 헤더 hidden (`lg:hidden`).
+- 메인 콘텐츠 패딩: `px-4 sm:px-6 lg:px-8 py-5 lg:py-7`.
+- Landing 은 `grid-cols-1 lg:grid-cols-[1.1fr_1fr]` (모바일 단일 컬럼 → lg 에서 split-screen).
+- Onboarding 폼은 `grid-cols-1 sm:grid-cols-2 (또는 sm:grid-cols-3)`.
+- Dashboard 의 학기 타임라인(`MyRoadmapCard`/`SeniorRoadmapCard`)은 `overflow-x-auto` 안에 `min-w-[640px]` 의 `grid-cols-8` 을 둠 — 좁은 화면에서는 가로 스크롤로 8학기 칼럼 유지.
+- Korean 한글 줄바꿈은 의미 단위에서 끊기게 `break-keep` 적용 (긴 본문 / 약관 카피).
+- 검증 완료 viewport: 320 / 768 / 1024 / 1440 — `/info` Placeholder 와 `/landing`, `/onboarding` 모두 깨짐 없음.
+
 ### Data flow (현재 상태)
 
 - 모든 페이지 데이터가 `src/data/*.js` 의 정적 객체에서 옴 (sidebar, dashboard, onboarding, profile, experiences, certificates, essays).
@@ -78,7 +91,7 @@ src/
 │   ├── Crumbs.jsx        # 빵부스러기. items: string[] | {label, to?}[]
 │   ├── Card.jsx          # Card + CardHeader 두 export
 │   ├── Button.jsx        # variant: default|primary|ghost|danger, size: md|sm
-│   ├── Modal.jsx         # open/onClose/title/sub/footer/width 슬롯
+│   ├── Modal.jsx         # open/onClose/title/sub/footer/width/hideClose 슬롯. backdrop click + 우상단 X + Esc 키로 닫힘. 열린 동안 body 스크롤 잠금
 │   ├── Badge.jsx         # tone: gray|navy|green|red|amber
 │   ├── PeersOrb.jsx      # Three.js 5축 입체 레이더 — 데이터 contract 고정 (아래 참조)
 │   └── dashboard/        # HeroBanner, MyRoadmapCard, SeniorRoadmapCard

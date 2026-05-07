@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import Crumbs from '../components/Crumbs';
 
 /**
- * Placeholder 페이지. 라우트 동작 확인용 — 점진적으로 실제 페이지로 교체됩니다.
+ * Placeholder 페이지. 라우트 동작 확인용 — 페이지가 만들어지면 교체됩니다.
  */
 export default function Placeholder({ title, crumbs = [] }) {
   return (
@@ -11,18 +11,15 @@ export default function Placeholder({ title, crumbs = [] }) {
       <Crumbs items={crumbs.length ? crumbs : [title]} />
       <div className="page-h">
         <h1>{title}</h1>
-        <div className="sub">이 페이지는 점진적으로 옮기는 중입니다.</div>
+        <div className="sub">준비 중인 페이지입니다.</div>
       </div>
       <div className="card mt-4 text-[13px] text-ink-500 leading-relaxed">
         <div className="font-semibold text-ink-700 mb-2">
-          아직 작업 중인 페이지입니다.
+          이 페이지는 곧 만나요.
         </div>
-        <p>
-          원본{' '}
-          <code className="font-mono text-[12px] bg-ink-100 px-1.5 py-0.5 rounded">
-            app.html
-          </code>
-          의 해당 페이지가 아직 분리되지 않았습니다.
+        <p className="break-keep">
+          현재 자소서·경험·자격증 등 일부 페이지가 준비 중입니다. 시연을 위해
+          대시보드부터 둘러보실 수 있어요.
         </p>
         <Link
           to="/dashboard"

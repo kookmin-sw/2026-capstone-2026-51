@@ -68,26 +68,28 @@ export default function SeniorRoadmapCard() {
         </div>
       </header>
 
-      {/* Track */}
-      <div className="relative pt-2 pb-1">
-        <div className="absolute left-0 right-0 top-[34px] h-px bg-ink-200" />
-        <div className="grid grid-cols-8 gap-1">
-          {SEMESTERS.map((s, i) => (
-            <div key={s.id} className="flex flex-col items-center">
-              <div className="text-[11px] font-semibold text-ink-500 mb-2">
-                {s.label}
+      {/* Track — 좁은 화면에서는 가로 스크롤로 8학기 칼럼 유지 */}
+      <div className="overflow-x-auto -mx-1 px-1">
+        <div className="relative pt-2 pb-1 min-w-[640px]">
+          <div className="absolute left-0 right-0 top-[34px] h-px bg-ink-200" />
+          <div className="grid grid-cols-8 gap-1">
+            {SEMESTERS.map((s, i) => (
+              <div key={s.id} className="flex flex-col items-center">
+                <div className="text-[11px] font-semibold text-ink-500 mb-2">
+                  {s.label}
+                </div>
+                <div className="relative h-3 w-full flex justify-center">
+                  <span className="block w-2 h-2 rounded-full bg-ink-200" />
+                </div>
+                <div className="mt-3 flex flex-col items-stretch gap-1.5 w-full">
+                  {buckets[i].map((m, j) => (
+                    <SeniorMilestone key={j} item={m} />
+                  ))}
+                </div>
+                <div className="text-[10px] text-ink-400 mt-2">{s.sub}</div>
               </div>
-              <div className="relative h-3 w-full flex justify-center">
-                <span className="block w-2 h-2 rounded-full bg-ink-200" />
-              </div>
-              <div className="mt-3 flex flex-col items-stretch gap-1.5 w-full">
-                {buckets[i].map((m, j) => (
-                  <SeniorMilestone key={j} item={m} />
-                ))}
-              </div>
-              <div className="text-[10px] text-ink-400 mt-2">{s.sub}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

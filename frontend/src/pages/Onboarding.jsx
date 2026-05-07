@@ -53,12 +53,13 @@ export default function Onboarding() {
   );
 
   const start = () => nav('/dashboard');
-  const cancel = () => nav('/');
+  // 취소 = 회원가입 중단. 인덱스('/')는 /dashboard 로 redirect 되므로 명시적으로 /landing 으로.
+  const cancel = () => nav('/landing');
 
   return (
-    <div className="min-h-screen bg-page flex flex-col items-center px-6 pt-10 pb-24">
+    <div className="min-h-screen bg-page flex flex-col items-center px-4 sm:px-6 pt-8 sm:pt-10 pb-16 sm:pb-24">
       {/* 브랜드 */}
-      <div className="flex items-center gap-2.5 mb-7 text-primary-900 font-bold text-[19px] tracking-tight">
+      <div className="flex items-center gap-2.5 mb-6 sm:mb-7 text-primary-900 font-bold text-[18px] sm:text-[19px] tracking-tight">
         <span className="grid place-items-center w-8 h-8 rounded-md bg-primary-900 text-white">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
             <path
@@ -76,22 +77,21 @@ export default function Onboarding() {
 
       <div className="w-full max-w-[920px] bg-paper border border-border rounded-xl shadow-md overflow-hidden">
         {/* 헤더 — 큼직하게 */}
-        <div className="px-12 pt-12 pb-8 border-b border-ink-150">
-          <h1 className="text-[30px] font-bold text-ink-900 tracking-tight leading-tight mb-2.5">
+        <div className="px-6 sm:px-10 lg:px-12 pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 border-b border-ink-150">
+          <h1 className="text-[24px] sm:text-[28px] lg:text-[30px] font-bold text-ink-900 tracking-tight leading-tight mb-2 sm:mb-2.5">
             Logi에 오신 걸 환영합니다
           </h1>
-          <div className="text-[14px] text-ink-500 leading-relaxed max-w-[560px]">
-            시작하기 전에 간단한 정보만 입력해 주세요.
-            <br />
-            자소서 작성·동기 비교·맞춤 추천에 자동으로 활용됩니다.
+          <div className="text-[13px] sm:text-[14px] text-ink-500 leading-relaxed max-w-[560px] break-keep">
+            시작하기 전에 간단한 정보만 입력해 주세요. 자소서 작성·동기
+            비교·맞춤 추천에 자동으로 활용됩니다.
           </div>
         </div>
 
         {/* 본문 — 섹션별 그룹 */}
-        <div className="px-12 pt-10 pb-4 grid gap-9">
+        <div className="px-6 sm:px-10 lg:px-12 pt-8 sm:pt-10 pb-4 grid gap-7 sm:gap-9">
           {/* 기본 정보 */}
           <Section title="기본 정보">
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <Field label="이름" required>
                 <input
                   className="field text-[14px] py-2.5"
@@ -116,7 +116,7 @@ export default function Onboarding() {
             title="학적 정보"
             sub="같은 전공·학번 친구들과의 비교 통계에 활용됩니다."
           >
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <Field label="전공" required>
                 <Select
                   value={form.major}
@@ -135,7 +135,7 @@ export default function Onboarding() {
                 />
               </Field>
             </div>
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <Field label="학년" required>
                 <Select
                   value={form.year}
@@ -169,7 +169,7 @@ export default function Onboarding() {
             title="관심 직무"
             sub="자소서 추천과 경험 분석에 활용됩니다. 추후 [내 정보]에서 수정할 수 있어요."
           >
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               <Field label="대분류" required>
                 <Select
                   value={form.jobL1}
@@ -196,20 +196,20 @@ export default function Onboarding() {
         </div>
 
         {/* 푸터 */}
-        <div className="px-12 py-6 flex justify-between items-center gap-4 border-t border-ink-150 bg-ink-100">
-          <div className="text-[12.5px] text-ink-500">
+        <div className="px-6 sm:px-10 lg:px-12 py-5 sm:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 border-t border-ink-150 bg-ink-100">
+          <div className="text-[12px] sm:text-[12.5px] text-ink-500 break-keep">
             입력한 정보는 언제든 [내 정보]에서 수정할 수 있어요.
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 sm:shrink-0">
             <button
               onClick={cancel}
-              className="px-4 py-2 rounded-md text-[13px] font-semibold bg-paper border border-ink-200 text-ink-700 hover:bg-ink-50 transition-colors"
+              className="flex-1 sm:flex-none px-4 py-2 rounded-md text-[13px] font-semibold bg-paper border border-ink-200 text-ink-700 hover:bg-ink-50 transition-colors"
             >
               취소
             </button>
             <button
               onClick={start}
-              className="px-5 py-2 rounded-md text-[13px] font-semibold bg-primary-900 border border-primary-900 text-white hover:bg-primary-800 transition-colors"
+              className="flex-1 sm:flex-none px-5 py-2 rounded-md text-[13px] font-semibold bg-primary-900 border border-primary-900 text-white hover:bg-primary-800 transition-colors"
             >
               시작하기
             </button>
