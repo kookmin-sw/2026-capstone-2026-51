@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, Pencil, Save, X as XIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { AlertTriangle, Pencil, Save, Trash2, X as XIcon } from 'lucide-react';
 import Crumbs from '../components/Crumbs';
+import Combobox from '../components/Combobox';
+import DeptCascadeSelect from '../components/DeptCascadeSelect';
+import Modal from '../components/Modal';
 import { cn } from '../lib/cn';
-import { useMe, useUpdateMe } from '../api/queries/useMe';
+import { useMe, useUpdateMe, useWithdraw } from '../api/queries/useMe';
+import { useAuth } from '../store/useAuth';
 import { toast } from '../store/useToast';
 import {
   STATE_LABEL,
   STATE_OPTIONS,
-  KOOKMIN_DEPT_OPTIONS,
-  KOOKMIN_COLLEGES,
   JOB_FIRST_OPTIONS,
   jobSecondOptions,
   jobThirdOptions,
