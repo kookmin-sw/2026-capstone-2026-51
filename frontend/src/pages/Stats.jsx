@@ -57,5 +57,39 @@ export default function Stats() {
   const [groupBy, setGroupBy] = useState('STATE'); // 'STATE' | 'SCHOOL_NUM' | 'WORKER'
   const q = useMyStats(groupBy);
 
+  const view = useMemo(() => {
+    const stats = q.data?.statistics;
+    const myCount = pickStat(stats, 'myCount');
+    const peerAvg = pickStat(stats, 'avg');
+    const peerCount = stats?.partTime?.userCount ?? 0;
+    return {
+      peerCount,
+      byCategory: FIVE_AXIS.map((a) => ({
+        ...a,
+        me: myCount[a.key] || 0,
+        peers: peerAvg[a.key] || 0,
+      })),
+      distribution: FIVE_AXIS.map((a) => ({
+        ...a,
+        value: myCount[a.key] || 0,
+      })),
+      shortages: (q.data?.weakPoints || []).map((wp) => {
+        const label = weakPointLabel(wp.type);
+        // 본인/평균 카운트는 5축 매핑에서 다시 가져와 안내 카피 생성에 사용.
+        const axis = FIVE_AXIS.find(
+          (a) => EXPERIENCE_CATEGORY_LABEL[a.key] === label
+        );
+        const me = axis ? myCount[axis.key] || 0 : 0;
+        const peers = axis ? peerAvg[axis.key] || 0 : 0;
+        return {
+          category: label || wp.type,
+          me,
+          peers,
+          suggestions: wp.recommendedItems || [],
+        };
+      }),
+    };
+  }, [q.data]);
+
   return null;
 }
