@@ -1,8 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../lib/cn';
-import { MAJORS, JOB_TREE } from '../data/onboarding';
+import Combobox from '../components/Combobox';
+import DeptCascadeSelect from '../components/DeptCascadeSelect';
+import {
+  STATE_OPTIONS,
+  JOB_FIRST_OPTIONS,
+  jobSecondOptions,
+  jobThirdOptions,
+} from '../lib/enums';
 import { useUpdateMe } from '../api/queries/useMe';
 import { toast } from '../store/useToast';
 
