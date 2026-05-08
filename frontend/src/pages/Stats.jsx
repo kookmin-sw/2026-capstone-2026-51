@@ -318,3 +318,83 @@ function MyDistribution({ data }) {
                     }}
                   />
                 );
+              })
+            )}
+          </svg>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            {hoveredData ? (
+              <>
+                <div className="text-[22px] font-bold text-ink-900 tabular-nums leading-none">
+                  {hoveredData.value}
+                </div>
+                <div className="text-[11px] text-ink-500 mt-1 font-semibold">
+                  {hoveredData.label}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-[26px] font-bold text-ink-900 tabular-nums leading-none">
+                  {total}
+                </div>
+                <div className="text-[12px] text-ink-500 mt-1">총 경험</div>
+              </>
+            )}
+          </div>
+
+          {hoveredSlice && hoveredData && (
+            <div
+              className="absolute bg-white border border-ink-200 rounded-md shadow-lg px-2.5 py-1.5 pointer-events-none z-10 min-w-[112px]"
+              style={{
+                left: mouse.x + 14,
+                top: mouse.y - 8,
+              }}
+            >
+              <div className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-ink-800">
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-sm"
+                  style={{ backgroundColor: hoveredSlice.color }}
+                />
+                {hoveredData.label}
+              </div>
+              <div className="text-[12.5px] text-ink-700 tabular-nums mt-0.5">
+                {hoveredData.value}건 ·{' '}
+                <span className="text-ink-500">{hoveredPct.toFixed(1)}%</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <ul className="self-end flex flex-wrap justify-end gap-x-2.5 gap-y-1 text-[10.5px] text-ink-600 max-w-full">
+          {data.map((d) => {
+            const pct = total === 0 ? 0 : (d.value / total) * 100;
+            return (
+              <li
+                key={d.key}
+                className="inline-flex items-center gap-1 cursor-pointer"
+                onMouseEnter={() => setHoverKey(d.key)}
+                onMouseLeave={() => setHoverKey(null)}
+              >
+                <span
+                  className="inline-block w-2 h-2 rounded-sm shrink-0"
+                  style={{ backgroundColor: CAT_COLORS[d.key] || '#9ca3af' }}
+                />
+                <span className="text-ink-700 font-medium">{d.label}</span>
+                <span className="text-ink-400 tabular-nums">
+                  {pct.toFixed(0)}%
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// 단일 슬라이스(100%) / 빈 상태용 — 채워진 링.
+// 외/내 두 원을 evenodd 로 빼서 도넛 모양 path 하나로 그림.
+function DonutRing({ color }) {
+  const cx = 60;
+  const cy = 60;
+  const rO = 57;
