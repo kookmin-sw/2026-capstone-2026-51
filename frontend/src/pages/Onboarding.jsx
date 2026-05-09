@@ -236,25 +236,43 @@ export default function Onboarding() {
             sub="자소서 추천과 경험 분석에 활용됩니다. 추후 [내 정보]에서 수정할 수 있어요."
           >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-              <Field label="대분류">
-                <Select
-                  value={form.jobL1}
-                  onChange={onChangeL1}
-                  options={l1Options}
+              <Field label="대분류" required error={errors.jobFirst}>
+                <Combobox
+                  value={form.jobFirst}
+                  onChange={onChangeJobFirst}
+                  options={JOB_FIRST_OPTIONS}
+                  placeholder="대분류 선택"
+                  searchable={false}
+                  forceDirection="down"
+                  hasError={!!errors.jobFirst}
                 />
               </Field>
-              <Field label="중분류">
-                <Select
-                  value={form.jobL2}
-                  onChange={onChangeL2}
-                  options={l2Options}
+              <Field label="중분류" required error={errors.jobSecond}>
+                <Combobox
+                  value={form.jobSecond}
+                  onChange={onChangeJobSecond}
+                  options={seconds}
+                  placeholder={
+                    form.jobFirst ? '중분류 선택' : '대분류부터 선택'
+                  }
+                  searchable={false}
+                  forceDirection="down"
+                  disabled={!form.jobFirst}
+                  hasError={!!errors.jobSecond}
                 />
               </Field>
-              <Field label="소분류">
-                <Select
-                  value={form.jobL3}
-                  onChange={(v) => update('jobL3', v)}
-                  options={l3Options}
+              <Field label="소분류" required error={errors.jobThird}>
+                <Combobox
+                  value={form.jobThird}
+                  onChange={(v) => update('jobThird', v)}
+                  options={thirds}
+                  placeholder={
+                    form.jobSecond ? '소분류 선택' : '중분류부터 선택'
+                  }
+                  searchable={false}
+                  forceDirection="down"
+                  disabled={!form.jobSecond}
+                  hasError={!!errors.jobThird}
                 />
               </Field>
             </div>
