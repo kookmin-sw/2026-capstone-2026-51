@@ -4,12 +4,21 @@ import { queryClient } from './api/queryClient';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Toaster from './components/Toaster';
-import Placeholder from './pages/Placeholder';
 import Onboarding from './pages/Onboarding';
 import Landing from './pages/Landing';
 import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import Info from './pages/Info';
+import MyExperience from './pages/MyExperience';
+import NewExperience from './pages/NewExperience';
+import ExperienceDetail from './pages/ExperienceDetail';
+import MyCertificates from './pages/MyCertificates';
+import NewCertificate from './pages/NewCertificate';
+import EditCertificate from './pages/EditCertificate';
+import Write from './pages/Write';
+import MyEssays from './pages/MyEssays';
+import EssayDetail from './pages/EssayDetail';
+import Stats from './pages/Stats';
 
 /**
  * 라우팅 + 글로벌 프로바이더.
