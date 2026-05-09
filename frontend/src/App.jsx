@@ -40,88 +40,19 @@ export default function App() {
             <Route element={<Layout />}>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route
-                path="/write"
-                element={
-                  <Placeholder
-                    title="자소서 작성"
-                    crumbs={['자소서', '작성하기']}
-                  />
-                }
-              />
-              <Route
-                path="/essays"
-                element={
-                  <Placeholder
-                    title="자소서 관리"
-                    crumbs={['자소서', '관리']}
-                  />
-                }
-              />
-              <Route
-                path="/essays/:id"
-                element={
-                  <Placeholder
-                    title="자소서 열람"
-                    crumbs={['자소서', '관리', '열람']}
-                  />
-                }
-              />
-              <Route
-                path="/stats"
-                element={<Placeholder title="통계" crumbs={['통계']} />}
-              />
+              <Route path="/write" element={<Write />} />
+              <Route path="/essays" element={<MyEssays />} />
+              <Route path="/essays/:id" element={<EssayDetail />} />
+              <Route path="/stats" element={<Stats />} />
               <Route path="/info" element={<Info />} />
-              <Route
-                path="/my-experience"
-                element={
-                  <Placeholder title="내 경험" crumbs={['MyPage', '내 경험']} />
-                }
-              />
-              <Route
-                path="/my-experience/new"
-                element={
-                  <Placeholder
-                    title="경험 추가"
-                    crumbs={['MyPage', '내 경험', '추가']}
-                  />
-                }
-              />
-              <Route
-                path="/my-experience/:id"
-                element={
-                  <Placeholder
-                    title="경험 열람"
-                    crumbs={['MyPage', '내 경험', '열람']}
-                  />
-                }
-              />
-              <Route
-                path="/my-certificates"
-                element={
-                  <Placeholder
-                    title="내 자격증"
-                    crumbs={['MyPage', '내 자격증']}
-                  />
-                }
-              />
-              <Route
-                path="/my-certificates/new"
-                element={
-                  <Placeholder
-                    title="자격증 추가"
-                    crumbs={['MyPage', '내 자격증', '추가']}
-                  />
-                }
-              />
+              <Route path="/my-experience" element={<MyExperience />} />
+              <Route path="/my-experience/new" element={<NewExperience />} />
+              <Route path="/my-experience/:id" element={<ExperienceDetail />} />
+              <Route path="/my-certificates" element={<MyCertificates />} />
+              <Route path="/my-certificates/new" element={<NewCertificate />} />
               <Route
                 path="/my-certificates/:id/edit"
-                element={
-                  <Placeholder
-                    title="자격증 수정"
-                    crumbs={['MyPage', '내 자격증', '수정']}
-                  />
-                }
+                element={<EditCertificate />}
               />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
