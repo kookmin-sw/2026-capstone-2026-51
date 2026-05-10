@@ -164,40 +164,51 @@ src/
 │   ├── queryClient.js    # react-query 글로벌 QueryClient (staleTime/retry 정책)
 │   └── queries/          # 도메인 훅 (useMe, useExperiences, useCertificates, useEssays) + keys.js
 ├── store/                # zustand
-│   ├── useAuth.js        # 토큰/유저 상태. logout: 클라 즉시 비움 + 백엔드 /auth/logout best-effort
+│   ├── useAuth.js        # 토큰/유저 상태. logout: 클라 즉시 비움 + 백엔드 /auth/logout best-effort. clearSession: 백엔드 호출 없이 클라만 비움 (회원 탈퇴 직후처럼 서버 세션이 이미 사라진 경우)
 │   └── useToast.js       # 토스트 큐 + toast.info/success/error 헬퍼
 ├── lib/
 │   ├── cn.js             # clsx 대체
 │   └── enums.js          # 백엔드 ↔ 프론트 enum 매핑 (ExperienceCategory, State, Progress 등)
-├── data/                 # 정적 mock
+├── data/                 # 정적 mock / 토큰
 │   ├── sidebar.js        # NAV, RELATED_SITES, CURRENT_USER
-│   ├── dashboard.js      # PEER_AXES, CAT_LABELS, CAT_COLORS, SEMESTERS, MY_ROADMAP, SENIOR_ROADMAPS, ymToSemIndex
-│   ├── onboarding.js     # MAJORS (단순 학부 리스트), JOB_TREE (3단 트리)
-│   ├── profile.js        # PROFILE, INTRO_TEXTS, PROFILE_LINKS
-│   ├── experiences.js    # CAT_LABEL, HISTORY_ITEMS (full STAR mock)
-│   ├── certificates.js   # 자격증 mock + (구독/CRUD store 패턴 흔적)
-│   └── essays.js
+│   └── dashboard.js      # CAT_LABELS, CAT_COLORS — Dashboard/Stats 시각화 색상 토큰만 (5축 mock 은 백엔드 흡수로 제거됨)
 ├── components/
 │   ├── Layout.jsx        # Sidebar + Outlet 셸 (max-width 1100)
 │   ├── ProtectedRoute.jsx# useAuth.isAuthenticated 가드. 미인증 → /landing replace
-│   ├── Sidebar.jsx       # NAV/RELATED_SITES 렌더, lucide ICONS lookup, DEV 빌드에서만 미리보기 링크 + 사용자 footer. 로그아웃 = useAuth.logout() (클라 즉시 비움 + 백엔드 /auth/logout best-effort)
+│   ├── Sidebar.jsx       # NAV 렌더 (lucide ICONS lookup) → 푸터 위 고정 영역에 RELATED_SITES → 사용자 footer. 로그아웃 = useAuth.logout() (클라 즉시 비움 + 백엔드 /auth/logout best-effort)
 │   ├── Toaster.jsx       # 우상단 토스트 스택. App 루트에 한 번 마운트
 │   ├── Crumbs.jsx        # 빵부스러기. items: string[] | {label, to?}[]
-│   ├── Card.jsx          # Card + CardHeader 두 export
-│   ├── Button.jsx        # variant: default|primary|ghost|danger, size: md|sm
-│   ├── Modal.jsx         # open/onClose/title/sub/footer/width/hideClose 슬롯. backdrop click + 우상단 X + Esc 키로 닫힘. 열린 동안 body 스크롤 잠금
-│   ├── Badge.jsx         # tone: gray|navy|green|red|amber
-│   ├── PeersOrb.jsx      # Three.js 5축 입체 레이더 — 데이터 contract 고정 (아래 참조)
-│   └── dashboard/        # HeroBanner, MyRoadmapCard, SeniorRoadmapCard
+│   ├── ErrorBoundary.jsx # 자식 throw 캐치 → fallback 카드. Dashboard 의 PeersOrb/EssayListCard/MyRoadmapCard/SeniorRoadmapCard 각각 감쌈
+│   ├── Button.jsx        # variant: default|primary|ghost|danger, size: md|sm — 디자인 시스템(현재 미사용, 보존)
+│   ├── Modal.jsx         # open/onClose/title/sub/footer/width/hideClose 슬롯. backdrop click + 우상단 X + Esc 키로 닫힘. 열린 동안 body 스크롤 잠금. 현재 Info.jsx 회원 탈퇴 확인 모달에서 사용
+│   ├── Badge.jsx         # tone: gray|navy|green|red|amber — 디자인 시스템(현재 미사용, 보존)
+│   ├── Combobox.jsx      # 검색 가능한 커스텀 드롭다운. searchable/forceDirection prop 으로 검색·펼침 방향 제어. ↑↓ Enter 키보드 nav, allowClear, viewport 자동 위/아래 펼침
+│   ├── DeptCascadeSelect.jsx # 단과대 → 학과 2단계 cascade (둘 다 Combobox). value 는 백엔드 직렬화 값 그대로
+│   ├── DatePicker.jsx    # 커스텀 캘린더 popover. day/month/year drill-down (헤더 클릭으로 view 전환). 'YYYY-MM-DD' 입출력. min/max 모든 view 적용, allowClear, forceDirection, viewport 자동 펼침
+│   ├── PeersOrb.jsx      # Three.js 5축 입체 레이더 — 나/동기/선배 3개 prism, 색 커스텀(localStorage 영속), stepped pyramid 중첩 (아래 참조)
+│   ├── experience/       # ExperienceForm.jsx (신규/수정 공용 폼, swagger ExperienceRequest 정합. 관련 전공은 KOOKMIN_DEPT_OPTIONS Combobox 단일 선택, 빈값 비허용)
+│   ├── certificate/      # CertificateForm.jsx (신규/수정 공용 폼, swagger CertificateRequest 정합 + 유효기간 토글 + PDF 증빙 첨부 UI — 클라 .pdf/10MB 검증, 백엔드 업로드 엔드포인트 미연동이라 form state 만 보관)
+│   ├── essay/            # EssayMetaForm.jsx (회사·직무·요구사항), QuestionEditor.jsx (문항 편집기 — 추천/생성/재생성/저장 통합)
+│   └── dashboard/        # HeroBanner, EssayListCard, MyRoadmapCard, SeniorRoadmapCard
 ├── pages/
 │   ├── Landing.jsx       # 풀-블리드 split-screen. Google 버튼 클릭 시 accounts.google.com 로 풀페이지 리다이렉트
 │   ├── AuthCallback.jsx  # OAuth 콜백 — grant code → POST /auth/login → firstLogin 분기
-│   ├── Onboarding.jsx    # 단일 페이지 폼. 시작하기 = PUT /users/me → /dashboard
-│   ├── Dashboard.jsx     # Crumbs + HeroBanner + (PeersOrb + MyRoadmapCard + SeniorRoadmapCard) 스택 (mock)
-│   ├── Info.jsx          # /info — useMe + view/edit 모드 + useUpdateMe. 학적/직무 enum 선택자
-│   └── Placeholder.jsx   # 미구현 라우트 공통 stub
-└── assets/               # hero.png, react.svg, vite.svg
+│   ├── Onboarding.jsx    # 단일 페이지 폼. lib/enums 직접 사용. 인라인 검증(필수/범위/부전공≠전공). 시작하기 = PUT /users/me → /dashboard
+│   ├── Dashboard.jsx     # Crumbs + 상단 통합 카드(HeroBanner 그라데이션 띠 + PeersOrb 좌 / EssayListCard 우, lg 2-col + divider) + MyRoadmapCard + SeniorRoadmapCard 스택. !hasProfile 일 때만 HeroBanner 단독 + placeholder.
+│   ├── MyExperience.jsx  # /my-experience — useExperiences 목록. 단일 .card !p-0 셸 안에 검색창 + 카테고리 필터 칩 + <ol> 번호 매긴 두 줄 콤팩트 row 리스트. row = 번호 + 카테고리 뱃지·제목 / 기간·관련전공. 클릭 → 상세. 검색은 experienceTitle 부분일치만 (클라이언트).
+│   ├── NewExperience.jsx # /my-experience/new — useCreateExperience + ExperienceForm 래퍼
+│   ├── ExperienceDetail.jsx # /my-experience/:id — view/edit 토글 + useUpdateExperience + useDeleteExperience (Modal 삭제 확인)
+│   ├── MyCertificates.jsx   # /my-certificates — 단일 .card !p-0 셸 안의 <ol> 번호 매긴 두 줄 콤팩트 row 리스트 (검색 필터 없음). row = 번호 + 자격증명 / 발급기관·취득·유효·발급번호 dot-separated. 우측 ghost 수정·삭제 아이콘. 삭제는 Modal 확인 ("삭제하시겠습니까?" 팝업 → 취소/삭제).
+│   ├── NewCertificate.jsx   # /my-certificates/new — useCreateCertificate + CertificateForm 래퍼
+│   ├── EditCertificate.jsx  # /my-certificates/:id/edit — 백엔드 단건 GET 없어 목록 캐시에서 ID 매칭 → useUpdateCertificate
+│   ├── Write.jsx            # /write — 자소서 작성 stage machine: meta(회사·직무·요구사항) → questions(문항 카드 다중 + AI 추천/생성/재생성/저장)
+│   ├── MyEssays.jsx         # /essays — 자소서 목록. 단일 .card !p-0 셸 안에 검색창 + <ol> 번호 매긴 두 줄 콤팩트 row 리스트. row = 번호 + 회사명·진행상태 뱃지 / 직무·최종수정일. essayId opportunistic — 있으면 우측 ghost "상세" 활성, 누락이면 disabled + 카드 위 안내 박스.
+│   ├── EssayDetail.jsx      # /essays/:id — 메타 view/edit + 결과 입력(IN_PROGRESS/PASS/FAIL) + 문항 읽기 + 자소서 삭제(2클릭 confirm). useEssay normalize 어댑터 사용.
+│   ├── Stats.jsx            # /stats — 통계 페이지. useMyStats(groupBy) 실 데이터(placeholderData 로 toggle 시 깜빡임 방지). 단일 .card !p-0 통합 카드: 막대 + 도넛은 lg:grid-cols-[1.4fr_1fr] 좌우 분할 / 5축 막대(헤더 양 끝 chevron carousel 로 STATE/SCHOOL_NUM/WORKER 토글, dot indicator) / 2D 도넛(흰색 stroke 외곽선 + 작은 슬라이스는 stroke 얇게, hover 시 scale + drop-shadow 로 z 축 lift, 마우스 커서 따라다니는 툴팁, 범례 하단 우측에 작게) / 부족한 경험.
+│   └── Info.jsx          # /info — useMe + view/edit 모드 + useUpdateMe. 학적/직무 enum 선택자. 하단에 회원 탈퇴(POST /auth/withdraw) 위험 영역 + 확인 모달 ("탈퇴" 입력 검증)
 ```
+
+(`assets/` 디렉토리는 2026-05-10 전수 정리에서 제거됨 — react.svg / vite.svg / hero.png 모두 참조 0건이라 삭제. 신규 자산이 필요하면 `src/assets/` 다시 만들어 import.)
 
 ### 사이드바 아이콘 lookup
 
@@ -205,11 +216,14 @@ src/
 
 ### Three.js (`PeersOrb`)
 
-`src/components/PeersOrb.jsx`는 npm `three` 의존(`^0.184.0`). 5축 데이터 contract `{ label, me, peers }` (값 0–100)는 파일 상단 주석에 **변경 금지** 명시 — 시각화만 바꾸고 데이터 모양은 유지.
+`src/components/PeersOrb.jsx`는 npm `three` 의존(`^0.184.0`). 5축 데이터 contract `{ label, me, peers, seniors? }` (값 0–100, `seniors` 누락 시 0). 나/동기/선배 3개 prism 을 z=0 평면 가운데 두고 ±양쪽(`mesh.position.z = -depth/2`, depth 0.07/0.10/0.13)으로 솟는 **샌드위치** prism — 회전 어느 각도에서도 양면 모두 튀어나와 보임. 앞/뒤 cap 외곽선 둘 다 그림. 범례 swatch 클릭 시 native `<input type="color">` 가 열려 색을 바꿀 수 있고, 선택은 `localStorage.peersOrb.colors.v1` 에 영속화. 색/가시성 변경은 ref 로 직접 갱신해 scene 재구축 회피. 헤더 우측 `Maximize2` 아이콘(`onExpand` prop 전달 시) 으로 Dashboard 가 모달에서 확대 PeersOrb (`chartMaxWidth=620`) 띄움. **본인 5축은 백엔드 dashboard myCount 가 0 으로 비어와 `Dashboard.jsx` 가 `useExperiences()`/`useCertificates()` 로 클라 직접 카운트.** **동기 평균은 백엔드 값이 우선이지만 0 이면 mock 보강. 선배 통계는 백엔드 미구현이라 항상 mock** (`PEER_MOCK` / `SENIOR_MOCK` in Dashboard.jsx). 백엔드가 정상화되면 mock fallback 자연 회피.
 
 ### 대시보드 카드
 
-- `dashboard/HeroBanner.jsx` — 그라데이션 배너 + CTA. `hasProfile=true` 분기로 신규/재방문 카피 전환.
+`hasProfile=true` 일 때 HeroBanner / PeersOrb / EssayListCard 셋을 단일 `<section className="card !p-0 overflow-hidden">` 안에 묶어 hero 영역 통합. 그래서 세 컴포넌트 모두 `embedded` prop 으로 외곽 카드 셸을 벗는 모드를 지원.
+
+- `dashboard/HeroBanner.jsx` — 그라데이션 배너. `hasProfile=true` 분기에서는 카피만 노출(자소서 작성 CTA 는 EssayListCard 로 이전). `!hasProfile` 일 때만 "온보딩 시작하기" CTA. `embedded` 면 `rounded-2xl/border/shadow/mb-3` 제거하고 그라데이션 배경만 남겨 통합 카드의 상단 띠로 사용.
+- `dashboard/EssayListCard.jsx` — `useEssays` 로 자소서 최대 5개 행 렌더(회사명·진행상태 뱃지·직무·최종수정일). 우하단 `자소서 작성하기` btn-primary CTA → `/write`. 6+ 시 좌하단 `전체 보기 (N)` → `/essays`. 백엔드 `EssayResponse.essayId` 누락으로 행 → 상세 진입은 비활성. `embedded` 면 `card !p-4` 제거하고 `flex flex-col h-full` 로 그리드 셀에 stretch — PeersOrb 의 자연 높이를 흡수해 CTA 가 우하단 고정.
 - `dashboard/MyRoadmapCard.jsx` — `SEMESTERS`(8학기 1-1~4-2) 가로 grid에 `MY_ROADMAP` 마일스톤을 `ymToSemIndex(y, m)`으로 버킷팅. `TODAY_SEM_INDEX = 6` (4-1) 학기 하이라이트.
 - `dashboard/SeniorRoadmapCard.jsx` — `SENIOR_ROADMAPS` 3명 배열을 ←/→ 화살표로 carousel. 같은 학기 축에 마일스톤 매핑.
 
