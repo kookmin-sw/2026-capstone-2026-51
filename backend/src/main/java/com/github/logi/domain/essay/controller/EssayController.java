@@ -14,6 +14,7 @@ import com.github.logi.domain.essay.dto.response.EssayGenerateResponse;
 import com.github.logi.domain.essay.dto.response.EssayListResponse;
 import com.github.logi.domain.essay.dto.response.EssayQuestionCreateResponse;
 import com.github.logi.domain.essay.dto.response.EssayRecommendResponse;
+import com.github.logi.domain.essay.service.EssayAiService;
 import com.github.logi.domain.essay.service.EssayService;
 import com.github.logi.domain.user.entity.User;
 import com.github.logi.global.dto.ApiResponse;
@@ -33,6 +34,7 @@ import java.util.UUID;
 public class EssayController {
 
     private final EssayService essayService;
+    private final EssayAiService essayAiService;
 
     @Operation(summary = "자소서 생성", description = "새 자소서를 생성하고 essayId를 반환합니다.")
     @PostMapping("/create")
@@ -120,7 +122,7 @@ public class EssayController {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody EssayRecommendRequest request
     ) {
-        return ApiResponse.ok(essayService.recommendExperiences(user, request));
+        return ApiResponse.ok(essayAiService.recommendExperiences(user, request));
     }
 
     @Operation(summary = "자소서 답변 생성", description = "자소서/문항/관련 경험 정보를 바탕으로 LLM이 답변 초안을 생성하여 반환합니다. (DB 저장하지 않음)")
@@ -129,7 +131,7 @@ public class EssayController {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody EssayGenerateRequest request
     ) {
-        return ApiResponse.ok(essayService.generateResponse(user, request));
+        return ApiResponse.ok(essayAiService.generateResponse(user, request));
     }
 
     @Operation(summary = "자소서 답변 재생성", description = "현재 답변과 수정 요청을 바탕으로 LLM이 답변을 개선하여 반환합니다. (DB 저장하지 않음)")
@@ -138,6 +140,6 @@ public class EssayController {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody EssayRegenerateRequest request
     ) {
-        return ApiResponse.ok(essayService.regenerateResponse(user, request));
+        return ApiResponse.ok(essayAiService.regenerateResponse(user, request));
     }
 }
