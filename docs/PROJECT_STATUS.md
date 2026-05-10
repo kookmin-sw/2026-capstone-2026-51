@@ -198,3 +198,48 @@
   - 옛 `Card({title, sub, children})` 인라인 함수는 더 이상 사용처 없어 새 `Section` 으로 대체 (외부 import 0 건이라 단순 교체).
 - **건드리지 않은 항목**: 헤더(아바타·이름·수정/저장 버튼), `DangerZone` 카드, validate / toDraft / toRequest, JobTreeSelect / DeptCascadeSelect — 모두 그대로.
 - **검증**: `npx eslint src/pages/Info.jsx` ✅ EXIT 0. dev HMR 자동 반영.
+
+### PeersOrb 데이터 5각형 입체화 (2026-05-10)
+
+- **목표**: 사용자 요청 — 대시보드 PeersOrb 의 "나" / "동기 평균" 5각형이 평면이라 회전 시 두께가 안 보임. 두 폴리곤을 입체(prism) 로 만들어 입체감 강화.
+- **변경**:
+  - [`src/components/PeersOrb.jsx`](../frontend/src/components/PeersOrb.jsx) — `buildDataMesh` 가 `THREE.ShapeGeometry` + `MeshBasicMaterial` 평면 폴리곤을 만들던 걸, `THREE.ExtrudeGeometry` (베벨 enabled) + `MeshPhongMaterial` (shininess 80, specular #fff) 5각 기둥으로 교체.
+    - 동기 평균: depth 0.14, base z=0, 회색 (Slate-400, opacity 0.55) — 얕은 prism.
+    - 나: depth 0.26, base z=0.002, 짙은 블루 (Blue-800, opacity 0.7) — 더 두껍고 살짝 앞 (z-fight 회피 + 시각적 우선).
+    - 두 prism 모두 grid 평면(z=0) 을 base 로 카메라 방향(+z) 으로 솟아오름 — 회전 시 옆면 음영이 입체감을 만든다.
+    - 윗면(앞쪽 cap) 외곽선은 `baseZ + depth + 0.004` 에 두어 베벨 위에 살짝 띄움.
+  - 파일 헤더 주석에 입체화 메모 한 줄 추가.
+- **건드리지 않은 항목**: 데이터 contract (`{label, me, peers}` 0~100), 5축 파라미터, 회전/드래그 인터랙션, fallback 차트, ToggleChip — 모두 그대로.
+- **검증**: `npx eslint src/components/PeersOrb.jsx` ✅ EXIT 0. `npx prettier --check` ✅. dev HMR 자동 반영.
+
+### 죽은 파일 정리 + 전체 페이지 정합 검증 (2026-05-10)
+
+- **목표**: 라우터 등록된 페이지 16개 + 모든 컴포넌트/훅/lib 모듈을 import 그래프로 훑어 사용처 0건인 파일 식별 → 영향 분석 후 삭제, 그 외 정합성·정적 동작 점검.
+- **방법**:
+  - `grep -rln "from.*${name}\b"` 로 src 전체에서 모든 컴포넌트/hook/lib export 의 외부 참조 카운트.
+  - public 정적 파일 / 설정 파일 / 동적 import 대상 / 백엔드 차단으로 의도적 보존된 hook 은 제외.
+  - lint/prettier/build 로 회귀 검증.
+- **삭제** (모두 외부 import 0건 확인):
+  - `frontend/src/components/Card.jsx` — `Card` / `CardHeader` 두 export 모두 어디에서도 import 안 됨. `Info.jsx` 가 동명의 인라인 함수(`function Card({title, sub, children})`) 를 자체 정의해 사용 중이라 외부 컴포넌트와 무관. 삭제 후 깨짐 0.
+  - `frontend/src/assets/react.svg` — Vite 템플릿 잔재. 어디에서도 참조 0.
+  - `frontend/src/assets/vite.svg` — 동일.
+  - `frontend/src/assets/hero.png` — 어디에서도 참조 0. PROJECT_STATUS / CLAUDE.md 의 "디렉토리 맵" 외 사용 없음.
+  - 위 3 자산 삭제로 `frontend/src/assets/` 디렉토리가 비어 폴더 자체도 제거.
+- **수정**:
+  - [`frontend/CLAUDE.md`](../frontend/CLAUDE.md) — 디렉토리 맵에서 `Card.jsx` 라인 + `assets/` 디렉토리 항목 제거.
+  - 본 PROJECT_STATUS — "보존 — 의도적 미사용" 섹션에서 `Modal.jsx` 라인 제거 (현재 `Info.jsx` 회원 탈퇴 모달에서 실제 사용 중이라 stale 이었음). "삭제한 파일 목록" 표에 4 건 추가.
+- **보존 (사용처 0건이지만 의도적/리스크 회피)**:
+  - `components/Badge.jsx`, `components/Button.jsx` — 디자인 시스템 컴포넌트. PROJECT_STATUS 명시.
+  - `useEssay`, `useDeleteEssay`, `useUpdateEssayResult` — 백엔드 `EssayResponse.essayId` 누락 차단으로 임시 미사용.
+  - `useAuth.setUser` action — store API 표면. 미사용이지만 향후 확장.
+  - `lib/enums.js` 의 `KOOKMIN_DEPARTMENTS` / `JOB_TREE_BACKEND` re-export 라인 + `labelize` — lib 헬퍼 표면. raw enum-data 직접 import 가 안 일어나는 게 정상이라 라이브러리 표면 보존이 안전.
+- **페이지 정합 검증** (정적, 16 라우트):
+  - `/landing`, `/auth/callback` (chromeless 공개) → Landing.jsx, AuthCallback.jsx — Google OAuth 시작 + grant code 교환 + StrictMode 가드 OK.
+  - `/onboarding` (chromeless 보호) → Onboarding.jsx — `useUpdateMe` PUT, 인라인 검증, 부전공 ≠ 전공 가드 OK.
+  - `/dashboard` (보호+Layout) → Dashboard.jsx — `useMe`/`useExperiences`/`useCertificates` 카운트 → 5 축 정규화 → PeersOrb. ErrorBoundary 카드별 분리 OK.
+  - `/write` → Write.jsx — meta → questions 2-stage. `useCreateEssay` / `useUpdateEssayMeta`. `QuestionEditor` 내부에서 추천/생성/재생성/저장 5 hook OK.
+  - `/essays` → MyEssays.jsx — `useEssays` + 클라 검색. essayId 차단 안내 인라인 노출 OK.
+  - `/essays/:id` → Placeholder. 의도된 보류 (essayId 차단).
+  - `/stats` → Stats.jsx — mock UI. 비교 대상 필터 OK.
+  - `/info` → Info.jsx — `useMe` / `useUpdateMe` / `useWithdraw` + `Modal` 회원 탈퇴 확인 OK.
+  - `/my-experience`, `/new`, `/:id` → MyExperience/NewExperience/ExperienceDetail.jsx — Experience CRUD 5 hook OK.
