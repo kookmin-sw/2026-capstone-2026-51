@@ -243,3 +243,47 @@
   - `/stats` → Stats.jsx — mock UI. 비교 대상 필터 OK.
   - `/info` → Info.jsx — `useMe` / `useUpdateMe` / `useWithdraw` + `Modal` 회원 탈퇴 확인 OK.
   - `/my-experience`, `/new`, `/:id` → MyExperience/NewExperience/ExperienceDetail.jsx — Experience CRUD 5 hook OK.
+  - `/my-certificates`, `/new`, `/:id/edit` → MyCertificates/NewCertificate/EditCertificate.jsx — Certificate CRUD 4 hook OK. EditCertificate 는 단건 GET 부재로 목록 캐시 매칭.
+  - `/`, `*` → `/dashboard` redirect.
+- **검증 명령어**:
+  - `npx eslint src/` ✅ EXIT 0.
+  - `npx prettier --check src/` ✅ "All matched files use Prettier code style!".
+  - `npm run build` ✅ 710ms, dist 정상 생성. 기존 chunk 사이즈 경고 + dynamic import 경고는 PROJECT_STATUS "남은 이슈" 에 이미 명시된 알려진 항목.
+- **남은 동적 검증** (코드 정적 분석으로는 판단 불가 — 라이브 dev 서버 + 실 계정 필요):
+  - 각 페이지 진입 + 새로고침 (HashRouter 정상 유지) 동작.
+  - API 호출 성공/실패 + 4xx/5xx 토스트 + 401/403 reissue 큐.
+  - 폼 submit + 인증 가드 redirect (`/landing`).
+  - 반응형 레이아웃 (320 / 768 / 1024 / 1440 viewport).
+  - PeersOrb WebGL 렌더 + ErrorBoundary fallback.
+
+### 백엔드 IP 갱신: 3.238.28.206 (2026-05-10, EC2 재재시작)
+
+- **사유**: EC2 또 재시작. `98.92.68.10` → `3.238.28.206`.
+- **변경**: `vite.config.js` 의 `API_TARGET` 갱신, `.env.local.example` / `frontend/CLAUDE.md` 의 IP 안내 갱신, dev 서버 재시작.
+- **항목 6번 (Elastic IP 할당) 재강조 필요** — 같은 작업 반복.
+
+### 대시보드·자소서 강조색 사이드바 톤 통일 + 대시보드 디자인 폴리싱 (2026-05-10)
+
+- **목표**: 사용자 피드백 — 대시보드 곳곳의 강조색이 제각각이고 PeersOrb 가 "2010년대 색감"·"AI 생성 티". 사이드바(#1B306F) 기준으로 통일하고 절제된 톤으로 정리.
+- **변경**:
+  - [`src/components/PeersOrb.jsx`](../frontend/src/components/PeersOrb.jsx) — 보라/Indigo 톤 전부 제거하고 단일 블루 hue 로 통일.
+    - 동기 평균 메쉬 `0x8b5cf6` (Violet-500) → `0x93c5fd` (Blue-300). 내(나) 메쉬(`#2563eb`)와 hue 일치, 채도/명도로만 구분.
+    - 그리드 라인 `0xc7d2fe` (Indigo-200) → `0xbfdbfe` (Blue-200).
+    - rim light `0xc7d2fe` → `0xbfdbfe`.
+    - 배경 그라데이션 회색 → 옅은 블루 틴트 (`#f5f8ff → #eaf0fb`).
+    - Legend / Fallback chart "동기 평균" 그라데이션 보라 → 블루 (`#bfdbfe → #3b82f6`).
+  - [`src/components/dashboard/SeniorRoadmapCard.jsx`](../frontend/src/components/dashboard/SeniorRoadmapCard.jsx) — UI 재구성, "AI 대시보드 템플릿" 흔적 제거.
+    - 헤더: 아바타 원 + 좌우 화살표 carousel (1/3 인디케이터) → 텍스트 탭 스타일. 활성 선배 `font-semibold + 2px 언더라인 (decoration-sidebar-bg)`.
+    - 마일스톤 카드: 좌측 3px 컬러 보더 → 제목 앞 6px 인라인 dot (에디토리얼 톤).
+    - 학기 dot 정렬 보정 (`items-center` 추가).
+    - `ChevronLeft/Right` import 제거.
+  - [`src/components/dashboard/HeroBanner.jsx`](../frontend/src/components/dashboard/HeroBanner.jsx) — 흰 CTA 버튼 텍스트 `text-primary-900` → `text-sidebar-bg`.
+  - [`src/components/dashboard/MyRoadmapCard.jsx`](../frontend/src/components/dashboard/MyRoadmapCard.jsx) — 강조색만 변경, 구조는 보존 (사용자 요청으로 dot/카드 스타일 변경 시도는 되돌림).
+    - 현재 학기 라벨 `text-primary-800` → `text-sidebar-bg`.
+    - "내 경험 전체 보기" 링크 `text-primary-700 hover:text-primary-900` → `text-sidebar-bg hover:text-primary-800`.
+- **연결한 API**: 없음 (순수 UI).
+- **건드리지 않은 항목**: 데이터 contract (`PeersOrb` 5축 `{label, me, peers}`, 마일스톤 shape) — 시각화만 변경.
+- **삭제**: 없음.
+- **검증**: `npx eslint src/components/PeersOrb.jsx src/components/dashboard/` ✅. dev HMR 자동 반영.
+
+### 회원 탈퇴 (POST /auth/withdraw) 연결 (2026-05-10)
