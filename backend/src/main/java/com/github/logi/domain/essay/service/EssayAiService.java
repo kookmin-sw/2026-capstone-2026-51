@@ -13,11 +13,13 @@ import com.github.logi.domain.experience.repository.ExperienceRepository;
 import com.github.logi.domain.user.entity.User;
 import com.github.logi.global.embedding.EmbeddingClient;
 import com.github.logi.global.llm.LlmClient;
+import com.github.logi.global.util.VectorLiterals;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,44 +35,22 @@ public class EssayAiService {
     private final EssayPromptBuilder essayPromptBuilder;
 
     public EssayGenerateResponse generateResponse(User user, EssayGenerateRequest request) {
-        EssayQuestion question = essayQuestionRepository
-                .findByIdWithEssayAndExperiences(request.questionId())
-                .orElseThrow(EssayExceptions.QUESTION_NOT_FOUND::toException);
-
-        Essay essay = question.getEssay();
-
-        if (!essay.getId().equals(request.essayId())) {
-            throw EssayExceptions.QUESTION_ESSAY_MISMATCH.toException();
-        }
-
-        if (!essay.getUser().getId().equals(user.getId())) {
-            throw EssayExceptions.FORBIDDEN_ESSAY.toException();
-        }
+        EssayQuestion question = loadAndAuthorizeQuestion(
+                request.essayId(), request.questionId(), user.getId());
 
         EssayPromptBuilder.Prompt prompt = essayPromptBuilder.buildGeneratePrompt(
-                essay, question, question.getExperiences());
+                question.getEssay(), question, question.getExperiences());
         String generated = llmClient.invoke(prompt.system(), prompt.user());
 
         return new EssayGenerateResponse(generated);
     }
 
     public EssayGenerateResponse regenerateResponse(User user, EssayRegenerateRequest request) {
-        EssayQuestion question = essayQuestionRepository
-                .findByIdWithEssayAndExperiences(request.questionId())
-                .orElseThrow(EssayExceptions.QUESTION_NOT_FOUND::toException);
-
-        Essay essay = question.getEssay();
-
-        if (!essay.getId().equals(request.essayId())) {
-            throw EssayExceptions.QUESTION_ESSAY_MISMATCH.toException();
-        }
-
-        if (!essay.getUser().getId().equals(user.getId())) {
-            throw EssayExceptions.FORBIDDEN_ESSAY.toException();
-        }
+        EssayQuestion question = loadAndAuthorizeQuestion(
+                request.essayId(), request.questionId(), user.getId());
 
         EssayPromptBuilder.Prompt prompt = essayPromptBuilder.buildRegeneratePrompt(
-                essay, question, question.getExperiences(),
+                question.getEssay(), question, question.getExperiences(),
                 request.currentResponse(), request.questionReq());
         String generated = llmClient.invoke(prompt.system(), prompt.user());
 
@@ -79,7 +59,7 @@ public class EssayAiService {
 
     public EssayRecommendResponse recommendExperiences(User user, EssayRecommendRequest request) {
         float[] questionEmbedding = embeddingClient.embed(request.question());
-        String embeddingLiteral = toVectorLiteral(questionEmbedding);
+        String embeddingLiteral = VectorLiterals.toLiteral(questionEmbedding);
 
         List<ExperienceRepository.RecommendedExperienceView> rows =
                 experienceRepository.findRecommendedByEmbedding(
@@ -96,16 +76,21 @@ public class EssayAiService {
         return new EssayRecommendResponse(related);
     }
 
-    private String toVectorLiteral(float[] embedding) {
-        StringBuilder sb = new StringBuilder(embedding.length * 8);
-        sb.append('[');
-        for (int i = 0; i < embedding.length; i++) {
-            if (i > 0) {
-                sb.append(',');
-            }
-            sb.append(embedding[i]);
+    private EssayQuestion loadAndAuthorizeQuestion(UUID essayId, UUID questionId, UUID userId) {
+        EssayQuestion question = essayQuestionRepository
+                .findByIdWithEssayAndExperiences(questionId)
+                .orElseThrow(EssayExceptions.QUESTION_NOT_FOUND::toException);
+
+        Essay essay = question.getEssay();
+
+        if (!essay.getId().equals(essayId)) {
+            throw EssayExceptions.QUESTION_ESSAY_MISMATCH.toException();
         }
-        sb.append(']');
-        return sb.toString();
+
+        if (!essay.getUser().getId().equals(userId)) {
+            throw EssayExceptions.FORBIDDEN_ESSAY.toException();
+        }
+
+        return question;
     }
 }
