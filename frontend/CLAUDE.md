@@ -77,8 +77,9 @@ Google Console 등록 redirect_uri 는 hash(`#`)를 받지 않아 pathname `/aut
 
 **`/users/me` 매핑 정책:**
 
-- `Info.jsx` (수정 페이지): 모든 enum 필드를 백엔드 직렬화 값으로 직접 사용. `KookminDepartment` 풀네임, `JobFirst/Second/Third` 한국 표준직업분류 — `lib/enums.js` 의 옵션 그대로.
-- `Onboarding.jsx` (첫 로그인): 기본 텍스트 필드만 매핑 (userName / schoolNumber / score / state). `major / minor / jobFirst / jobSecond / jobThird` 는 **null** — 회원가입 시점에는 굳이 백엔드 enum 풀 트리를 보여주지 않고, 추후 `/info` 에서 정식으로 채우게 함. (Onboarding 의 mock `MAJORS` / `JOB_TREE` 는 deprecation 대상 — 향후 정리 가능.)
+- `Info.jsx` (수정 페이지) / `Onboarding.jsx` (첫 로그인) 둘 다 모든 enum 필드를 백엔드 직렬화 값으로 직접 사용. `KookminDepartment` 풀네임, `JobFirst/Second/Third` 한국 표준직업분류 — `lib/enums.js` 의 옵션 그대로 PUT.
+- `Onboarding.jsx` / `Info.jsx` 필수 필드: 이름(2자+) / 학번(8자리 숫자) / 전공 / 현재상태 / **학점(0~4.5)** / 희망직무 대·중·소. 옵셔널: 부전공. 부전공은 전공과 같을 수 없어 옵션 자체에서 제외. 폼 초기값 없음(placeholder만), 검증 실패는 인라인 에러로 노출.
+- 옛 mock (`data/onboarding.js` 의 `MAJORS` / `JOB_TREE`)은 정리되어 삭제됨 — 새 폼은 모두 `lib/enums.js` 사용.
 
 ### CSS / Tailwind
 
