@@ -102,10 +102,11 @@ public class UserStatsService {
 
     private List<String> fetchTopExperienceTitles(User user, GroupContext ctx, ExperienceCategory category) {
         PageRequest page = PageRequest.of(0, RECOMMEND_TOP_N);
+        String relatedMajor = user.getMajor() != null ? user.getMajor().name() : "";
         List<ExperienceRepository.TitleCountView> views = switch (ctx.groupBy()) {
-            case STATE -> experienceRepository.findTopTitlesByMajorAndStateAndCategory(user.getMajor(), ctx.state(), category, user, page);
-            case SCHOOL_NUM -> experienceRepository.findTopTitlesByMajorAndSchoolNumAndCategory(user.getMajor(), ctx.groupKey(), category, user, page);
-            case WORKER -> experienceRepository.findTopTitlesByMajorAndWorkerAndCategory(user.getMajor(), category, user, page);
+            case STATE -> experienceRepository.findTopTitlesByMajorAndStateAndCategory(user.getMajor(), ctx.state(), category, user, relatedMajor, page);
+            case SCHOOL_NUM -> experienceRepository.findTopTitlesByMajorAndSchoolNumAndCategory(user.getMajor(), ctx.groupKey(), category, user, relatedMajor, page);
+            case WORKER -> experienceRepository.findTopTitlesByMajorAndWorkerAndCategory(user.getMajor(), category, user, relatedMajor, page);
         };
         return views.stream()
                 .map(ExperienceRepository.TitleCountView::getTitle)
@@ -128,8 +129,8 @@ public class UserStatsService {
         return switch (groupBy) {
             case STATE -> new GroupContext(groupBy, user.getState() != null ? user.getState().name() : "", user.getState());
             case SCHOOL_NUM -> {
-                String prefix = user.getSchoolNumber() != null && user.getSchoolNumber().length() >= 2
-                        ? user.getSchoolNumber().substring(0, 2)
+                String prefix = user.getSchoolNumber() != null && user.getSchoolNumber().length() >= 4
+                        ? user.getSchoolNumber().substring(0, 4)
                         : "";
                 yield new GroupContext(groupBy, prefix, null);
             }

@@ -1,6 +1,7 @@
 package com.github.logi.domain.experience.entity;
 
 import com.github.logi.domain.experience.dto.request.ExperienceRequest;
+import com.github.logi.domain.user.entity.State;
 import com.github.logi.domain.user.entity.User;
 import com.github.logi.global.entity.BaseEntity;
 import com.github.logi.global.type.VectorType;
@@ -25,6 +26,10 @@ public class Experience extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state_at_creation", length = 20)
+    private State stateAtCreation;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "experience_category", length = 20)
@@ -64,6 +69,7 @@ public class Experience extends BaseEntity {
     public static Experience create(User user, ExperienceRequest request) {
         Experience experience = new Experience();
         experience.user = user;
+        experience.stateAtCreation = request.stateAtCreation();
         experience.experienceCategory = request.experienceCategory();
         experience.relatedMajor = request.relatedMajor();
         experience.experienceTitle = request.experienceTitle();
@@ -82,6 +88,7 @@ public class Experience extends BaseEntity {
 
     public void update(ExperienceRequest request) {
         this.experienceCategory = request.experienceCategory();
+        this.stateAtCreation = request.stateAtCreation();
         this.relatedMajor = request.relatedMajor();
         this.experienceTitle = request.experienceTitle();
         this.startDate = request.startDate();
