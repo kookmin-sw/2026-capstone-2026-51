@@ -693,3 +693,43 @@
 - [x] 취소 → 변경 저장 안 함
 
 ### P4. 통계 페이지 — ✅ mock UI 완료 (2026-05-09)
+
+- [x] 비교 대상 필터 (STATE / SCHOOL_NUM / WORKER, `lib/enums.js` 의 STATS_GROUP_LABEL 사용)
+- [x] 5축 막대그래프 (대내/대외/인턴/알바/자격증) — 본인 vs 평균
+- [x] 경험 카테고리 분포 차트 (본인 자체) — SVG 도넛 + 우측 범례 (2026-05-10 업데이트)
+- [x] 비교 기준 표시 + 비교 대상 인원 수
+- [x] 부족한 경험 카드 (카테고리별 미달 + 추천 경험) + 모두 충분 시 "다른 집단 비교 권고" 텍스트
+- [x] "목표로 추가" 버튼 미노출
+- [ ] **백엔드 의존**: `GET /users/me/stats?groupBy=` 구현 후 `useMyStats(groupBy)` 훅 추가하여 mock 변수 교체
+
+### P5. (백엔드 협의 필요) 자격증 가중치 시스템
+
+- [ ] 5/1 회의 새 기능. API 명세 CSV 미반영 — 백엔드와 별도 협의 후 페이지 추가
+- [ ] 자소서 합/불 입력 시 도움된 자격증 선택 → 통계의 "기준 1등" 자격증 표시
+
+### ⚠️ 백엔드 의존 항목 (Swagger 재검증 후, 2026-05-10 — 신규 4종 추가 흡수)
+
+> 백엔드 진실 원천: **`https://3.238.28.206/api/swagger-ui/index.html`** (도메인 DNS 미갱신). 2026-05-10 재검증 결과 스웨거 **28개** 엔드포인트 = 프론트 hook 28개 1:1 매핑 완료 (백엔드가 신규 4종 추가). 아래는 hook 은 있지만 **백엔드 응답 결함으로 일부 동작이 막혀있는** 지점들.
+
+#### 프론트 훅 보강 — 모두 완료 (2026-05-10 시점)
+
+- [x] `useRecommendExperiences` (POST `/essays/recommend`) (2026-05-09)
+- [x] `useGenerateAnswer` (POST `/essays/generate`) (2026-05-09)
+- [x] `useRegenerateAnswer` (POST `/essays/regenerate`) (2026-05-09)
+- [x] `useEssays.js` 주석의 "백엔드 미구현" 문구 정정, `recommand` → `recommend` 오타 수정 (2026-05-09)
+- [x] `useWithdraw` (POST `/auth/withdraw`) (2026-05-10)
+- [x] **`useDashboard` (GET `/users/me/dashboard`)** (2026-05-10) — 신규 백엔드 흡수
+- [x] **`useMyStats(groupBy)` (GET `/users/me/stats?groupBy=`)** (2026-05-10) — 신규 백엔드 흡수
+- [x] **`useEssay(id)` 안 normalize 어댑터** — `requirement`→`globalReq`, `modifiedDate`→`updatedAt` 정합 통일 (2026-05-10)
+- [ ] `EssayResponse` 목록 항목에 `essayId` 없음 → **목록→상세 라우팅이 opportunistic 으로만 동작 (응답에 essayId 가 들어오면 자동 활성)**. 백엔드 응답 보강 필요.
+
+#### 백엔드 의존 — 스웨거에 없거나 빠진 것
+
+| 항목                                           | 상태                               | 데모 영향                                                                                                                                                   |
+| ---------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /users/me/stats?groupBy=`                 | ✅ 구현됨 (2026-05-10)             | Stats 실 데이터 흡수 완료                                                                                                                                   |
+| `GET /users/me/dashboard`                      | ✅ 구현됨 (2026-05-10)             | Dashboard 실 데이터 흡수 완료                                                                                                                               |
+| `GET /essays/{essayId}`                        | ✅ 구현됨 (2026-05-10)             | EssayDetail 페이지 활성                                                                                                                                     |
+| `GET /experiences/{experienceId}`              | ✅ 구현됨 (2026-05-10)             | ExperienceDetail 이미 hook 사용 중이라 영향 없음                                                                                                            |
+| 자격증 가중치 (5/1 회의)                       | 명세 자체 없음                     | 데모 필수 X                                                                                                                                                 |
+| `EssayResponse.essayId` 누락                   | 명세 누락 (스웨거 명시)            | **자소서 목록→상세 라우팅 opportunistic 비활성** — 백엔드 수정 필요                                                                                         |
