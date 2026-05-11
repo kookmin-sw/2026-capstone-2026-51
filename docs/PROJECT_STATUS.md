@@ -812,3 +812,34 @@
 ### useEssays.js 의 일부 훅 — 활성 (2026-05-10)
 
 - `useEssay` / `useUpdateEssayResult` / `useDeleteEssay` — `/essays/:id` 페이지에서 사용 중. 진입 경로(`/essays` 카드 클릭)는 `EssayResponse.essayId` 응답에 의존하므로 백엔드 fix 전엔 직접 URL 진입만 가능 (opportunistic).
+
+## 마지막 검증 명령어 / 결과
+
+(2026-05-11, 경험·자격증 폼/목록 5종 폴리싱 직후)
+
+```sh
+cd frontend
+npx eslint src/                # ✅ EXIT 0, 에러 없음
+npx prettier --check src/      # ✅ "All matched files use Prettier code style!"
+npm run build                  # ✅ 663ms, dist/ 생성.
+                                #    chunk 사이즈 경고 + dynamic import 경고는 기존 이슈 (남은 이슈 참조).
+```
+
+`npm test`는 위 lint+prettier 두 명령을 묶은 것 (실 단위 테스트 없음).
+
+런타임 검증:
+
+- Dev 서버: `http://localhost:3000/` ✅ (Vite proxy 가 `/api` → `https://3.238.28.206` 포워딩, secure:false 로 cert CN mismatch 우회)
+- 프록시 테스트: `POST http://localhost:3000/api/auth/login` 가짜 grantCode → HTTP 401 백엔드 응답 정상 도달 ✅
+- Google OAuth 로그인 → /dashboard 도달 (사용자 확인 완료)
+
+---
+
+## Next Session Handoff
+
+> 이 섹션은 **항상 문서의 맨 마지막**에 유지. 새 세션은 여기만 먼저 읽으면 됨.
+> 작업 단위가 끝날 때마다 이 섹션을 갱신 — 위 본문보다 이 섹션이 stale 되면 의미 없음.
+
+### 먼저 읽어야 할 맥락 (5개)
+
+1. **역할**: 프론트엔드 담당. 백엔드 API 직접 구현 X. 백엔드가 만든 엔드포인트를 화면에 연결.
