@@ -5,9 +5,13 @@ import com.github.logi.domain.essay.entity.Progress;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Schema(description = "자소서 목록 항목")
 public record EssayResponse(
+        @Schema(description = "자소서 ID")
+        UUID essayId,
+
         @Schema(description = "지원 회사명", example = "토스")
         String companyName,
 
@@ -22,6 +26,7 @@ public record EssayResponse(
 ) {
     public static EssayResponse from(Essay essay) {
         return new EssayResponse(
+                essay.getId(),
                 essay.getCompanyName(),
                 essay.getWishJob(),
                 essay.getProgress(),
