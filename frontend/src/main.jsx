@@ -1,115 +1,98 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './index.css';
+
 import Layout from './components/Layout';
 import Placeholder from './pages/Placeholder';
 import Onboarding from './pages/Onboarding';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
+import Write from './pages/Write';
+import Essays from './pages/Essays';
+import EssayView from './pages/EssayView';
+import EssayEdit from './pages/EssayEdit';
+import Stats from './pages/Stats';
 
-const queryClient = new QueryClient();
-
+/**
+ * App entry — Vite 프로젝트에서는 main.jsx 하나가 진입점.
+ * preview.html(CDN 모드)에서는 동일한 코드를 Babel로 직접 실행합니다.
+ */
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <HashRouter>
-        <Routes>
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route
-              path="/write"
-              element={
-                <Placeholder
-                  title="자소서 작성"
-                  crumbs={['자소서', '작성하기']}
-                />
-              }
-            />
-            <Route
-              path="/essays"
-              element={
-                <Placeholder title="자소서 관리" crumbs={['자소서', '관리']} />
-              }
-            />
-            <Route
-              path="/essays/:id"
-              element={
-                <Placeholder
-                  title="자소서 열람"
-                  crumbs={['자소서', '관리', '열람']}
-                />
-              }
-            />
-            <Route
-              path="/stats"
-              element={<Placeholder title="통계" crumbs={['통계']} />}
-            />
-            <Route
-              path="/info"
-              element={
-                <Placeholder title="내 정보" crumbs={['MyPage', '내 정보']} />
-              }
-            />
-            <Route
-              path="/my-experience"
-              element={
-                <Placeholder title="내 경험" crumbs={['MyPage', '내 경험']} />
-              }
-            />
-            <Route
-              path="/my-experience/new"
-              element={
-                <Placeholder
-                  title="경험 추가"
-                  crumbs={['MyPage', '내 경험', '추가']}
-                />
-              }
-            />
-            <Route
-              path="/my-experience/:id"
-              element={
-                <Placeholder
-                  title="경험 열람"
-                  crumbs={['MyPage', '내 경험', '열람']}
-                />
-              }
-            />
-            <Route
-              path="/my-certificates"
-              element={
-                <Placeholder
-                  title="내 자격증"
-                  crumbs={['MyPage', '내 자격증']}
-                />
-              }
-            />
-            <Route
-              path="/my-certificates/new"
-              element={
-                <Placeholder
-                  title="자격증 추가"
-                  crumbs={['MyPage', '내 자격증', '추가']}
-                />
-              }
-            />
-            <Route
-              path="/my-certificates/:id/edit"
-              element={
-                <Placeholder
-                  title="자격증 수정"
-                  crumbs={['MyPage', '내 자격증', '수정']}
-                />
-              }
-            />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Route>
-        </Routes>
-      </HashRouter>
-    </QueryClientProvider>
+    <HashRouter>
+      <Routes>
+        {/* 사이드바 없는 단독 화면 */}
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+
+        {/* 메인 앱 — 사이드바 레이아웃 */}
+        <Route element={<Layout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/write" element={<Write />} />
+          <Route path="/essays" element={<Essays />} />
+          <Route path="/essays/:id" element={<EssayView />} />
+          <Route path="/essays/:id/edit" element={<EssayEdit />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route
+            path="/info"
+            element={
+              <Placeholder title="내 정보" crumbs={['MyPage', '내 정보']} />
+            }
+          />
+          <Route
+            path="/my-experience"
+            element={
+              <Placeholder title="내 경험" crumbs={['MyPage', '내 경험']} />
+            }
+          />
+          <Route
+            path="/my-experience/new"
+            element={
+              <Placeholder
+                title="경험 추가"
+                crumbs={['MyPage', '내 경험', '추가']}
+              />
+            }
+          />
+          <Route
+            path="/my-experience/:id"
+            element={
+              <Placeholder
+                title="경험 열람"
+                crumbs={['MyPage', '내 경험', '열람']}
+              />
+            }
+          />
+          <Route
+            path="/my-certificates"
+            element={
+              <Placeholder title="내 자격증" crumbs={['MyPage', '내 자격증']} />
+            }
+          />
+          <Route
+            path="/my-certificates/new"
+            element={
+              <Placeholder
+                title="자격증 추가"
+                crumbs={['MyPage', '내 자격증', '추가']}
+              />
+            }
+          />
+          <Route
+            path="/my-certificates/:id/edit"
+            element={
+              <Placeholder
+                title="자격증 수정"
+                crumbs={['MyPage', '내 자격증', '수정']}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   );
 }
 
