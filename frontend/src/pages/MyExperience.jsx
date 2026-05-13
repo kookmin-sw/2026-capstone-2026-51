@@ -8,6 +8,7 @@ import {
   EXPERIENCE_CATEGORY_TO_FRONT,
   EXPERIENCE_CATEGORY_LABEL,
   EXPERIENCE_CATEGORY_OPTIONS,
+  EXPERIENCE_CATEGORY_TONE,
 } from '../lib/enums';
 
 /**
@@ -147,6 +148,7 @@ export default function MyExperience() {
 function ExpRow({ index, item }) {
   const cat = EXPERIENCE_CATEGORY_TO_FRONT[item.experienceCategory];
   const label = EXPERIENCE_CATEGORY_LABEL[cat] || item.experienceCategory;
+  const tone = EXPERIENCE_CATEGORY_TONE[cat] || 'navy';
   const period = `${fmtYM(item.startDate)} ~ ${fmtYM(item.endDate)}`;
 
   return (
@@ -161,7 +163,7 @@ function ExpRow({ index, item }) {
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="badge-navy">{label}</span>
+              <span className={`badge-${tone}`}>{label}</span>
               <h3 className="text-[14px] font-semibold text-ink-900 tracking-tight break-keep">
                 {item.experienceTitle}
               </h3>

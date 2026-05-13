@@ -32,6 +32,16 @@ export const EXPERIENCE_CATEGORY_LABEL = {
   cert: '자격증',
 };
 
+// 카테고리별 뱃지 톤 — 한 페이지에 여러 카테고리가 섞일 때 색으로 구분.
+// 톤은 `src/index.css` 의 .badge-{gray|navy|green|red|amber} primitive 와 일치.
+export const EXPERIENCE_CATEGORY_TONE = {
+  intern: 'navy',
+  activity: 'green',
+  internal: 'amber',
+  parttime: 'gray',
+  cert: 'red',
+};
+
 export const EXPERIENCE_CATEGORY_OPTIONS = [
   { value: 'internal', label: '대내활동' },
   { value: 'activity', label: '대외활동' },

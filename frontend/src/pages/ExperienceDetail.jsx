@@ -12,6 +12,7 @@ import {
 import {
   EXPERIENCE_CATEGORY_TO_FRONT,
   EXPERIENCE_CATEGORY_LABEL,
+  EXPERIENCE_CATEGORY_TONE,
 } from '../lib/enums';
 import { toast } from '../store/useToast';
 
@@ -87,6 +88,7 @@ export default function ExperienceDetail() {
 
   const cat = EXPERIENCE_CATEGORY_TO_FRONT[data.experienceCategory];
   const label = EXPERIENCE_CATEGORY_LABEL[cat] || data.experienceCategory;
+  const tone = EXPERIENCE_CATEGORY_TONE[cat] || 'navy';
 
   const handleSave = (body) => {
     update.mutate(
@@ -129,7 +131,7 @@ export default function ExperienceDetail() {
       <header className="flex flex-wrap items-start justify-between gap-3 mb-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-[12px] mb-1.5">
-            <span className="badge-navy">{label}</span>
+            <span className={`badge-${tone}`}>{label}</span>
             <span className="text-ink-400">·</span>
             <span className="text-ink-500 tabular-nums">
               {data.startDate} ~ {data.endDate}

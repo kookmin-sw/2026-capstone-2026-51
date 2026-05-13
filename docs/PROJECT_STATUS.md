@@ -16,6 +16,16 @@
 
 ## 최근 작업 단위 (가장 최근부터)
 
+### 경험 카테고리 뱃지 색 카테고리별 분리 (2026-05-13)
+
+- **목표**: 사용자 보고 — 경험 목록·상세 페이지의 카테고리 뱃지(인턴/대외활동/대내활동/알바)가 전부 navy 한 가지 색이라 한 눈에 구분이 안 됨.
+- **변경**:
+  - [`src/lib/enums.js`](../frontend/src/lib/enums.js) — `EXPERIENCE_CATEGORY_TONE` 매핑 추가. `intern→navy / activity→green / internal→amber / parttime→gray / cert→red` (`.badge-{tone}` primitive 와 일치).
+  - [`src/pages/MyExperience.jsx`](../frontend/src/pages/MyExperience.jsx) / [`src/pages/ExperienceDetail.jsx`](../frontend/src/pages/ExperienceDetail.jsx) — 하드코딩된 `className="badge-navy"` 를 `EXPERIENCE_CATEGORY_TONE` lookup 으로 교체.
+- **건드리지 않은 항목**: ExperienceForm 의 카테고리 선택 칩(선택/비선택 토글이 더 중요해 색 분리 불필요), `.badge-*` primitive (기존 5종 그대로 활용).
+- **검증**: `npx eslint src/...` ✅ / `npx prettier --check ...` ✅ / `npm run build` ✅ 676ms.
+- **이유**: 사용자가 목록에서 어떤 카테고리인지 색만으로 빠르게 스캔할 수 있어야 함. 5종에 새 톤 추가하지 않고 기존 primitive (navy/green/amber/gray/red) 5종 그대로 매핑해 디자인 일관성 유지.
+
 ### Crumbs 항목 클릭 시 해당 라우트로 이동 (2026-05-13)
 
 - **목표**: 사용자 보고 — 페이지 상단 breadcrumb 의 "내 경험" 같은 항목을 눌러도 이동이 안 됨. 라우트가 있는 항목은 전부 클릭으로 이동되도록.
