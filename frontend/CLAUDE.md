@@ -198,9 +198,9 @@ src/
 │   ├── MyExperience.jsx  # /my-experience — useExperiences 목록. 단일 .card !p-0 셸 안에 검색창 + 카테고리 필터 칩 + <ol> 번호 매긴 두 줄 콤팩트 row 리스트. row = 번호 + 카테고리 뱃지·제목 / 기간·관련전공. 클릭 → 상세. 검색은 experienceTitle 부분일치만 (클라이언트).
 │   ├── NewExperience.jsx # /my-experience/new — useCreateExperience + ExperienceForm 래퍼
 │   ├── ExperienceDetail.jsx # /my-experience/:id — view/edit 토글 + useUpdateExperience + useDeleteExperience (Modal 삭제 확인)
-│   ├── MyCertificates.jsx   # /my-certificates — 단일 .card !p-0 셸 안의 <ol> 번호 매긴 두 줄 콤팩트 row 리스트 (검색 필터 없음). row = 번호 + 자격증명 / 발급기관·취득·유효·발급번호 dot-separated. 우측 ghost 수정·삭제 아이콘. 삭제는 Modal 확인 ("삭제하시겠습니까?" 팝업 → 취소/삭제).
+│   ├── MyCertificates.jsx   # /my-certificates — 단일 .card !p-0 셸 안의 <ol> 번호 매긴 두 줄 콤팩트 row 리스트 (검색 필터 없음). row 전체가 Link → /my-certificates/:id. 목록 자체엔 수정·삭제 액션 없음 (상세 페이지에서 처리).
 │   ├── NewCertificate.jsx   # /my-certificates/new — useCreateCertificate + CertificateForm 래퍼
-│   ├── EditCertificate.jsx  # /my-certificates/:id/edit — 백엔드 단건 GET 없어 목록 캐시에서 ID 매칭 → useUpdateCertificate
+│   ├── CertificateDetail.jsx # /my-certificates/:id — view/edit 토글 + useUpdateCertificate + useDeleteCertificate (Modal 삭제 확인). 백엔드 단건 GET 없어 목록 캐시에서 ID 매칭. 증빙 자료 섹션은 백엔드 multipart 업로드 미연동 안내.
 │   ├── Write.jsx            # /write — 자소서 작성 stage machine: meta(회사·직무·요구사항) → questions(문항 카드 다중 + AI 추천/생성/재생성/저장)
 │   ├── MyEssays.jsx         # /essays — 자소서 목록. 단일 .card !p-0 셸 안에 검색창 + <ol> 번호 매긴 두 줄 콤팩트 row 리스트. row = 번호 + 회사명·진행상태 뱃지 / 직무·최종수정일. essayId opportunistic — 있으면 우측 ghost "상세" 활성, 누락이면 disabled + 카드 위 안내 박스.
 │   ├── EssayDetail.jsx      # /essays/:id — 메타 view/edit + 결과 입력(IN_PROGRESS/PASS/FAIL) + 문항 읽기 + 자소서 삭제(2클릭 confirm). useEssay normalize 어댑터 사용.

@@ -15,7 +15,6 @@ import ExperienceDetail from './pages/ExperienceDetail';
 import MyCertificates from './pages/MyCertificates';
 import NewCertificate from './pages/NewCertificate';
 import CertificateDetail from './pages/CertificateDetail';
-import EditCertificate from './pages/EditCertificate';
 import Write from './pages/Write';
 import MyEssays from './pages/MyEssays';
 import EssayDetail from './pages/EssayDetail';
@@ -54,10 +53,6 @@ export default function App() {
               <Route
                 path="/my-certificates/:id"
                 element={<CertificateDetail />}
-              />
-              <Route
-                path="/my-certificates/:id/edit"
-                element={<EditCertificate />}
               />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>

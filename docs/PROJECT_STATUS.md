@@ -16,6 +16,16 @@
 
 ## 최근 작업 단위 (가장 최근부터)
 
+### 죽은 `EditCertificate` 페이지/라우트 정리 (2026-05-13)
+
+- **목표**: 직전 커밋에서 `CertificateDetail` 이 view + edit 모드를 통합 흡수 → `/my-certificates/:id/edit` 가 reachable 하지 않게 됨. 정리.
+- **변경**:
+  - [`src/App.jsx`](../frontend/src/App.jsx) — `EditCertificate` import / `/my-certificates/:id/edit` Route 제거.
+  - `src/pages/EditCertificate.jsx` — 파일 삭제 (참조 0건).
+  - [`frontend/CLAUDE.md`](../frontend/CLAUDE.md) — 디렉토리 맵의 `EditCertificate.jsx` 줄 → `CertificateDetail.jsx` 로 교체, `MyCertificates.jsx` 설명도 row Link 패턴으로 갱신.
+- **건드리지 않은 항목**: 자격증 도메인 훅, `CertificateForm`, `NewCertificate`.
+- **검증**: `grep EditCertificate src/` → 코드 참조 0 건 (주석에 역사적 노트 1 줄만 남음) / `npm run build` ✅ 481ms.
+
 ### 자격증 row 클릭 시 상세 페이지 진입 (2026-05-13)
 
 - **목표**: 사용자 보고 — `MyCertificates` row 를 눌러도 반응이 없음(클릭 핸들러 부재). 또한 자세히보기 페이지 자체가 없어 첨부 파일 표시할 곳도 없음.
