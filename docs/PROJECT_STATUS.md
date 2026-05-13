@@ -16,6 +16,20 @@
 
 ## 최근 작업 단위 (가장 최근부터)
 
+### 자소서 상세 카드 통합 + 진행상태 태그 디자인 정리 (2026-05-13)
+
+- **목표**: 사용자 보고 — `EssayDetail` 에 카드가 4 개(메타 / 결과 입력 / 문항 / 위험 영역)로 흩어져있고, 진행상태 태그 표시가 어색함(회사명을 뱃지로 표시하던 옛 디자인).
+- **변경**:
+  - [`src/pages/EssayDetail.jsx`](../frontend/src/pages/EssayDetail.jsx) — 카드를 2 개 + 모달 1 개로 압축.
+    1. **"기본 정보" 통합 카드**: 헤더(자소서 라벨 + **진행상태 뱃지만**, h1 = 회사명, sub = 직무·최종수정일, 우측 [메타 수정][삭제]) / divider / 글로벌 요구사항 / divider / 지원 결과 입력 토글. 옛 회사명 `badge-navy` 제거 — 회사명은 h1 로 격상해 시각 위계 명확.
+    2. **"문항" 카드**: 그대로 유지.
+    3. **삭제 모달**: 옛 "위험 영역" 카드 + 2 클릭 confirm + 5 초 타이머 → `Modal` 한 번에 통합 (ExperienceDetail / CertificateDetail 패턴 일관).
+  - 결과 입력 active 버튼 강조: 기존 `opacity-50` → `border-primary-600 text-primary-800 bg-primary-50` 로 명확히 "선택된 결과" 표시 + Check 아이콘 유지.
+  - 사용 안 하는 import 정리 (`X as XIcon`, `ArrowLeft`).
+- **건드리지 않은 항목**: `useEssays` 훅, `EssayMetaForm`, 문항 편집 흐름(/write), `MyEssays` row Link.
+- **검증**: `npx eslint ...` ✅ EXIT 0 / `npx prettier --check` ✅ / `npm run build` ✅ 478ms.
+- **이유**: 카드가 많을수록 각 카드의 정보 위계가 약해지고 페이지가 세로로 길어짐. 메타와 결과는 같은 자소서의 속성이라 한 카드 안 divider 로 묶고, 위험 영역은 자주 보이지 않아야 할 액션이라 모달로 숨김. 회사명을 뱃지로 표시하는 건 "이 회사는 카테고리다" 같은 잘못된 의미 전달 — h1 로 격상.
+
 ### 자소서 목록 row 전체 클릭 시 상세 진입 (2026-05-13)
 
 - **목표**: 사용자 보고 — `MyEssays` row 의 우측 [상세] 버튼만 동작, row 본문을 눌러도 반응 없음.

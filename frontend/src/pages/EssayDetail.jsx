@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import {
-  Pencil,
-  Trash2,
-  X as XIcon,
-  ArrowLeft,
-  PencilLine,
-  Check,
-} from 'lucide-react';
+import { Pencil, Trash2, PencilLine, Check } from 'lucide-react';
 import Crumbs from '../components/Crumbs';
+import Modal from '../components/Modal';
 import EssayMetaForm from '../components/essay/EssayMetaForm';
 import {
   useEssay,
@@ -25,17 +19,18 @@ import { toast } from '../store/useToast';
  * 데이터: GET /essays/:id (useEssay 훅이 EssayDetailResponse 의 requirement→globalReq,
  *  modifiedDate→updatedAt normalize 적용).
  *
+ * 카드 구조 (2026-05-13 정리):
+ *  - "기본 정보" 카드 하나로 통합 — 헤더(회사명 h1 + 진행상태 뱃지 + [수정][삭제]),
+ *    직무·최종수정일 sub, 글로벌 요구사항, 결과 입력 토글 한 줄.
+ *  - "문항" 카드 — 문항 목록 (읽기 전용, 편집은 /write 흐름에서).
+ *  - 삭제 모달 — ExperienceDetail / CertificateDetail 패턴과 일관 (위험 영역 카드 폐기).
+ *
  * 동작:
  *  - 메타 view ↔ edit 토글. 저장 = PATCH /essays/:id.
- *  - 문항 목록: 질문/답변/maxLength/문항 번호 표시. "이 문항 편집" 버튼은 본 페이지에서
- *    문항 단위 편집기를 띄우는 대신 /write 의 QuestionEditor 흐름으로 보내지 않고,
- *    상세에서는 읽기 전용으로 노출 (편집은 전용 페이지가 아닌 /write 흐름에서 관리).
- *    → 본 PR 에서는 단순히 읽기 + 결과/삭제 컨트롤. 문항 인라인 편집은 추후 단위로 분리.
  *  - 결과 입력: PATCH /essays/:id/result body: { progress: PASS|FAIL|IN_PROGRESS }.
- *  - 삭제: DELETE /essays/:id (2클릭 confirm + 5초 자동 취소).
+ *  - 삭제: DELETE /essays/:id (모달 확인).
  *
- * 진입 경로: /essays 카드 → /essays/:id (essayId 가 응답에 있을 때만 활성).
- *  목록 응답에 essayId 가 누락되면 진입은 차단되어 본 페이지에 도달 못 함.
+ * 진입 경로: /essays row 클릭 → /essays/:id (essayId 가 응답에 있을 때만 활성).
  */
 export default function EssayDetail() {
   const { id } = useParams();
@@ -43,7 +38,7 @@ export default function EssayDetail() {
   const q = useEssay(id);
 
   const [editingMeta, setEditingMeta] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmDelOpen, setConfirmDelOpen] = useState(false);
 
   const updateMeta = useUpdateEssayMeta();
   const updateResult = useUpdateEssayResult();
@@ -77,15 +72,11 @@ export default function EssayDetail() {
     );
   };
 
-  const handleDelete = () => {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      setTimeout(() => setConfirmDelete(false), 5000);
-      return;
-    }
+  const handleConfirmDelete = () => {
     deleteEssay.mutate(id, {
       onSuccess: () => {
         toast.success('자소서를 삭제했습니다.');
+        setConfirmDelOpen(false);
         nav('/essays');
       },
       onError: (e) => toast.error(e?.apiMessage || '삭제에 실패했습니다.'),
@@ -111,7 +102,7 @@ export default function EssayDetail() {
     <>
       <Crumbs items={['자소서', { label: '관리', to: '/essays' }, '열람']} />
 
-      {/* 메타 영역 */}
+      {/* 기본 정보 — 메타 + 결과 입력 통합 카드 */}
       <section className="card mb-4">
         {editingMeta ? (
           <EssayMetaForm
@@ -126,83 +117,94 @@ export default function EssayDetail() {
             submitLabel="수정 저장"
           />
         ) : (
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="badge-navy">
-                  {essay.companyName || '회사명 없음'}
-                </span>
-                <span className={`badge-${tone}`}>{label}</span>
-              </div>
-              <h1 className="text-[20px] font-bold tracking-tight text-ink-900 break-keep mb-1">
-                {essay.wishJob || '직무 미입력'}
-              </h1>
-              {essay.updatedAt && (
-                <div className="text-[12px] text-ink-500 tabular-nums mb-2">
-                  최종 수정 {fmtDate(essay.updatedAt)}
+          <>
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div className="min-w-0">
+                <div className="text-[12px] text-ink-500 mb-1.5 flex items-center gap-2">
+                  <span>자소서</span>
+                  <span className={`badge-${tone}`}>{label}</span>
                 </div>
-              )}
-              <p className="text-[12.5px] text-ink-700 break-keep whitespace-pre-line">
-                <span className="text-ink-500">글로벌 요구사항: </span>
-                {essay.globalReq || '—'}
+                <h1 className="text-[22px] font-bold tracking-tight text-ink-900 break-keep">
+                  {essay.companyName || '회사명 없음'}
+                </h1>
+                <div className="text-[13px] text-ink-700 mt-0.5 break-keep">
+                  {essay.wishJob || '직무 미입력'}
+                  {essay.updatedAt && (
+                    <span className="text-ink-500 ml-2 tabular-nums">
+                      · 최종 수정 {fmtDate(essay.updatedAt)}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1.5 sm:shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setEditingMeta(true)}
+                  className="btn-default btn-sm"
+                >
+                  <Pencil size={11} strokeWidth={2} />
+                  메타 수정
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelOpen(true)}
+                  disabled={deleteEssay.isPending}
+                  className="btn-default btn-sm !text-red-600 !border-red-200 hover:!bg-red-50"
+                >
+                  <Trash2 size={11} strokeWidth={2} />
+                  삭제
+                </button>
+              </div>
+            </div>
+
+            <div className="border-t border-ink-150 pt-3">
+              <div className="text-[11.5px] font-semibold text-ink-500 mb-1">
+                글로벌 요구사항
+              </div>
+              <p className="text-[13px] text-ink-800 break-keep whitespace-pre-line">
+                {essay.globalReq || <span className="text-ink-400">—</span>}
               </p>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              <Link to="/essays" className="btn-default btn-sm">
-                <ArrowLeft size={11} strokeWidth={2} />
-                목록
-              </Link>
-              <button
-                type="button"
-                onClick={() => setEditingMeta(true)}
-                className="btn-default btn-sm"
-              >
-                <Pencil size={11} strokeWidth={2} />
-                메타 수정
-              </button>
+
+            <div className="border-t border-ink-150 mt-3 pt-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-[12.5px] font-semibold text-ink-800">
+                  지원 결과
+                </div>
+                <p className="text-[11.5px] text-ink-500 mt-0.5 break-keep">
+                  결과를 기록하면 통계에 반영됩니다.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {['IN_PROGRESS', 'PASS', 'FAIL'].map((p) => {
+                  const isActive = essay.progress === p;
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      disabled={isActive || updateResult.isPending}
+                      onClick={() => handleResult(p)}
+                      className={
+                        'btn-default btn-sm ' +
+                        (isActive
+                          ? '!border-primary-600 !text-primary-800 !bg-primary-50'
+                          : '')
+                      }
+                    >
+                      {isActive && <Check size={11} strokeWidth={2.2} />}
+                      {PROGRESS_LABEL[p]}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </section>
 
-      {/* 결과 입력 */}
+      {/* 문항 카드 */}
       {!editingMeta && (
-        <section className="card mb-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-[14px] font-bold text-ink-900">결과 입력</h2>
-              <p className="text-[11.5px] text-ink-500 mt-0.5 break-keep">
-                지원 결과를 기록하면 통계에 반영됩니다.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {['IN_PROGRESS', 'PASS', 'FAIL'].map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  disabled={essay.progress === p || updateResult.isPending}
-                  onClick={() => handleResult(p)}
-                  className={
-                    'btn-default btn-sm ' +
-                    (essay.progress === p
-                      ? 'opacity-50 cursor-not-allowed'
-                      : '')
-                  }
-                >
-                  {essay.progress === p && (
-                    <Check size={11} strokeWidth={2.2} />
-                  )}
-                  {PROGRESS_LABEL[p]}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 문항 목록 */}
-      {!editingMeta && (
-        <section className="card mb-4">
+        <section className="card">
           <header className="flex items-end justify-between gap-3 mb-3 flex-wrap">
             <div>
               <h2 className="text-[14px] font-bold text-ink-900">문항</h2>
@@ -246,38 +248,39 @@ export default function EssayDetail() {
         </section>
       )}
 
-      {/* 위험 영역 */}
-      {!editingMeta && (
-        <section className="card border-red-200 bg-red-50/30">
-          <h2 className="text-[14px] font-bold text-red-700 mb-1">위험 영역</h2>
-          <p className="text-[12px] text-ink-600 mb-3 break-keep">
-            삭제하면 자소서와 모든 문항이 함께 사라지고 복구할 수 없어요.
-          </p>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleteEssay.isPending}
-            className={
-              'btn-default btn-sm ' +
-              (confirmDelete
-                ? 'border-red-300 text-red-700 bg-red-50'
-                : 'text-red-700')
-            }
-          >
-            {confirmDelete ? (
-              <>
-                <Trash2 size={11} strokeWidth={2} />
-                정말 삭제 (다시 클릭)
-              </>
-            ) : (
-              <>
-                <XIcon size={11} strokeWidth={2} />
-                자소서 삭제
-              </>
-            )}
-          </button>
-        </section>
-      )}
+      {/* 삭제 확인 모달 */}
+      <Modal
+        open={confirmDelOpen}
+        onClose={() =>
+          deleteEssay.isPending ? null : setConfirmDelOpen(false)
+        }
+        title="삭제하시겠습니까?"
+        sub={`'${essay.companyName || '이 자소서'}' 항목이 영구 삭제되고, 모든 문항도 함께 사라집니다. 이 작업은 되돌릴 수 없습니다.`}
+        width={420}
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn-default"
+              disabled={deleteEssay.isPending}
+              onClick={() => setConfirmDelOpen(false)}
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              className="btn-default !text-red-600 !border-red-200 hover:!bg-red-50"
+              disabled={deleteEssay.isPending}
+              onClick={handleConfirmDelete}
+            >
+              <Trash2 size={13} strokeWidth={2} />
+              {deleteEssay.isPending ? '삭제 중…' : '삭제'}
+            </button>
+          </>
+        }
+      >
+        <></>
+      </Modal>
     </>
   );
 }
@@ -309,7 +312,6 @@ function DetailError({ message, onRetry }) {
       <p className="text-[13px] text-ink-700 mb-3 break-keep">{message}</p>
       <div className="flex justify-center gap-2">
         <Link to="/essays" className="btn-default">
-          <ArrowLeft size={12} strokeWidth={2} />
           목록으로
         </Link>
         {onRetry && (
