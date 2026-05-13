@@ -14,7 +14,7 @@ import { fileURLToPath, URL } from 'node:url';
 //   - 프론트 코드의 axios baseURL 은 `/api` 한 줄이면 됨.
 //   - VITE_API_PROXY_TARGET 으로 IP 또는 도메인 지정. 미설정 시 IP 직접 사용 (도메인 logi.p-e.kr 은 DNS 갱신 후 사용).
 const API_TARGET =
-  process.env.VITE_API_PROXY_TARGET || 'https://3.238.28.206';
+  process.env.VITE_API_PROXY_TARGET || 'https://3.238.245.5';
 
 export default defineConfig({
   plugins: [react()],

@@ -256,6 +256,12 @@
   - 반응형 레이아웃 (320 / 768 / 1024 / 1440 viewport).
   - PeersOrb WebGL 렌더 + ErrorBoundary fallback.
 
+### 백엔드 IP 갱신: 3.238.245.5 (2026-05-13, EC2 재재시작)
+
+- **사유**: EC2 또 재시작. `3.238.28.206` → `3.238.245.5`.
+- **변경**: `vite.config.js` 의 `API_TARGET` 갱신, `frontend/CLAUDE.md` 의 IP 안내 갱신, dev 서버 재시작.
+- **항목 6번 (Elastic IP 할당) 재강조 필요** — 같은 작업 반복 (이번이 3회째 관찰).
+
 ### 백엔드 IP 갱신: 3.238.28.206 (2026-05-10, EC2 재재시작)
 
 - **사유**: EC2 또 재시작. `98.92.68.10` → `3.238.28.206`.
@@ -709,7 +715,7 @@
 
 ### ⚠️ 백엔드 의존 항목 (Swagger 재검증 후, 2026-05-10 — 신규 4종 추가 흡수)
 
-> 백엔드 진실 원천: **`https://3.238.28.206/api/swagger-ui/index.html`** (도메인 DNS 미갱신). 2026-05-10 재검증 결과 스웨거 **28개** 엔드포인트 = 프론트 hook 28개 1:1 매핑 완료 (백엔드가 신규 4종 추가). 아래는 hook 은 있지만 **백엔드 응답 결함으로 일부 동작이 막혀있는** 지점들.
+> 백엔드 진실 원천: **`https://3.238.245.5/api/swagger-ui/index.html`** (도메인 DNS 미갱신). 2026-05-10 재검증 결과 스웨거 **28개** 엔드포인트 = 프론트 hook 28개 1:1 매핑 완료 (백엔드가 신규 4종 추가). 아래는 hook 은 있지만 **백엔드 응답 결함으로 일부 동작이 막혀있는** 지점들.
 
 #### 프론트 훅 보강 — 모두 완료 (2026-05-10 시점)
 
@@ -766,8 +772,8 @@
 ## 남은 이슈 / 리스크
 
 - **CORS allowed-origins 불일치**: 백엔드 yml은 `http://localhost:3000`만 허용. 통합 테스트 시 백엔드 yml 갱신 또는 프론트 3000 사용 필수.
-- **`logi.p-e.kr` 도메인 DNS 갱신 안 됨**: DNS가 옛 IP 가리킴. 도메인으로 접속 시 connection timeout. **현재는 IP 직접 사용 (`https://3.238.28.206/api`, 2026-05-09 EC2 재재시작 후)** — 백엔드/인프라팀이 DNS 갱신할 때까지.
-- **자체 서명 인증서**: 실서버 `https://3.238.28.206/api`는 자체서명. 브라우저 첫 방문 시 해당 URL 직접 열어 "고급 → 진행" 한 번 통과해야 fetch 호출이 SSL 차단되지 않음.
+- **`logi.p-e.kr` 도메인 DNS 갱신 안 됨**: DNS가 옛 IP 가리킴. 도메인으로 접속 시 connection timeout. **현재는 IP 직접 사용 (`https://3.238.245.5/api`, 2026-05-09 EC2 재재시작 후)** — 백엔드/인프라팀이 DNS 갱신할 때까지.
+- **자체 서명 인증서**: 실서버 `https://3.238.245.5/api`는 자체서명. 브라우저 첫 방문 시 해당 URL 직접 열어 "고급 → 진행" 한 번 통과해야 fetch 호출이 SSL 차단되지 않음.
 - **번들 크기 경고**: 프로덕션 빌드 결과 단일 청크 ~979 KB(gzip 274 KB). Three.js 등으로 부피 큼. 현재는 경고만; 배포 직전 코드 스플릿 검토.
 - **dynamic import 경고**: `src/store/useAuth.js`가 `axios.js`에서 dynamic import + 다른 곳에서 static import. 의도된 cycle 회피이지만 청크 분리 효과 없음 — 현 동작에 문제는 없음.
 - **테스트 부재**: 단위 테스트 없음. `npm test`는 lint+format 게이트. 실제 동작 검증은 dev 서버에서 수동.
@@ -829,7 +835,7 @@ npm run build                  # ✅ 663ms, dist/ 생성.
 
 런타임 검증:
 
-- Dev 서버: `http://localhost:3000/` ✅ (Vite proxy 가 `/api` → `https://3.238.28.206` 포워딩, secure:false 로 cert CN mismatch 우회)
+- Dev 서버: `http://localhost:3000/` ✅ (Vite proxy 가 `/api` → `https://3.238.245.5` 포워딩, secure:false 로 cert CN mismatch 우회)
 - 프록시 테스트: `POST http://localhost:3000/api/auth/login` 가짜 grantCode → HTTP 401 백엔드 응답 정상 도달 ✅
 - Google OAuth 로그인 → /dashboard 도달 (사용자 확인 완료)
 
@@ -844,7 +850,7 @@ npm run build                  # ✅ 663ms, dist/ 생성.
 
 1. **역할**: 프론트엔드 담당. 백엔드 API 직접 구현 X. 백엔드가 만든 엔드포인트를 화면에 연결.
 2. **D-11 마감**: 2026-05-22 최종 발표 (오늘 2026-05-11 기준).
-3. **백엔드 진실 원천 = Swagger**: `https://3.238.28.206/api/swagger-ui/index.html` (현 IP, EC2 재시작마다 변동 — Elastic IP 미설정). **노션 API CSV 부정확** — 차이 있을 때 무조건 스웨거가 우선.
+3. **백엔드 진실 원천 = Swagger**: `https://3.238.245.5/api/swagger-ui/index.html` (현 IP, EC2 재시작마다 변동 — Elastic IP 미설정). **노션 API CSV 부정확** — 차이 있을 때 무조건 스웨거가 우선.
 4. **백엔드 ↔ 프론트 hook 매핑** (2026-05-10 swagger 재재검증, 백엔드 신규 4종 추가):
    - 스웨거 엔드포인트 **28개** = 프론트 hook 28개 (1:1 매핑 완료, **미연결 0건**).
    - 새로 흡수된 4종: `GET /users/me/dashboard`, `GET /users/me/stats?groupBy=`, `GET /essays/{id}`, `GET /experiences/{id}`. 백엔드 미구현 항목 **0개**.
