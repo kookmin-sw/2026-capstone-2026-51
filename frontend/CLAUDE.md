@@ -24,7 +24,7 @@ Logi 프론트엔드 — 국민대학교 자소서 플랫폼. React 19 + Vite 8 
 `.env` / `.env.local` 둘 다 gitignored. 추적되는 건 `.env.local.example` 뿐 — 그게 canonical 가이드.
 
 - `VITE_API_URL` — axios client(`src/api/axios.js`)에 주입. 백엔드 `context-path: /api` 이므로 값에 `/api`까지 포함. **권장 `/api` 사용** (Vite proxy 가 `vite.config.js` 의 `API_TARGET` 으로 포워딩). 직접 IP 도 가능하지만 cert CN mismatch (`ERR_CERT_COMMON_NAME_INVALID`) 발생.
-  - **현재 백엔드 IP: `3.238.245.5`** (2026-05-13 EC2 재시작 후). EC2 가 Elastic IP 미설정이라 **재시작마다 IP 변경** — 변경 시 `vite.config.js` 의 `API_TARGET` 갱신 후 dev 서버 재시작.
+  - **현재 백엔드 IP: `44.222.126.118`** (2026-05-13 EC2 재시작 후). EC2 가 Elastic IP 미설정이라 **재시작마다 IP 변경** — 변경 시 `vite.config.js` 의 `API_TARGET` 갱신 후 dev 서버 재시작.
   - 도메인 `logi.p-e.kr` 은 DNS 갱신 안 돼 옛 IP 가리킴 — 사용 불가.
 - `VITE_GOOGLE_CLIENT_ID` — Google OAuth client_id. 백엔드 팀이 Google Console 에 등록한 값과 동일해야 함. `client_secret` 은 백엔드만 보유.
 - `VITE_GOOGLE_REDIRECT_URI` — Google Console 에 등록된 redirect_uri. 기본 `http://localhost:3000/auth/callback`. 다른 값으로 바꾸려면 Google Console 등록도 같이.
