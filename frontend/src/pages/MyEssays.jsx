@@ -113,46 +113,51 @@ export default function MyEssays() {
 function EssayRow({ index, item }) {
   const tone = PROGRESS_TONE[item.progress] || 'gray';
   const label = PROGRESS_LABEL[item.progress] || item.progress;
-  return (
-    <li className="px-4 sm:px-5 py-2.5 hover:bg-ink-50/60 transition-colors">
-      <div className="flex items-start gap-3">
-        <span className="text-[12.5px] font-semibold text-ink-400 tabular-nums shrink-0 w-6 pt-[3px] text-right">
-          {index}.
-        </span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-[14px] font-semibold text-ink-900 tracking-tight break-keep">
-              {item.companyName || '회사명 없음'}
-            </h3>
-            <span className={`badge-${tone}`}>{label}</span>
-          </div>
-          <div className="text-[12px] text-ink-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 tabular-nums">
-            <span>{item.wishJob || '직무 미입력'}</span>
-            {item.updatedAt && (
-              <>
-                <span className="text-ink-300">·</span>
-                <span>최종 수정 {fmtDate(item.updatedAt)}</span>
-              </>
-            )}
-          </div>
+  const body = (
+    <div className="flex items-start gap-3">
+      <span className="text-[12.5px] font-semibold text-ink-400 tabular-nums shrink-0 w-6 pt-[3px] text-right">
+        {index}.
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="text-[14px] font-semibold text-ink-900 tracking-tight break-keep">
+            {item.companyName || '회사명 없음'}
+          </h3>
+          <span className={`badge-${tone}`}>{label}</span>
         </div>
-        <div className="flex gap-1 shrink-0">
-          {item.essayId ? (
-            <Link to={`/essays/${item.essayId}`} className="btn-ghost btn-sm">
-              상세
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              title="백엔드 응답에 essayId 가 누락되어 상세 진입이 차단되어 있습니다 (백엔드 fix 후 활성)"
-              className="btn-ghost btn-sm opacity-50 cursor-not-allowed"
-            >
-              상세
-            </button>
+        <div className="text-[12px] text-ink-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 tabular-nums">
+          <span>{item.wishJob || '직무 미입력'}</span>
+          {item.updatedAt && (
+            <>
+              <span className="text-ink-300">·</span>
+              <span>최종 수정 {fmtDate(item.updatedAt)}</span>
+            </>
           )}
         </div>
       </div>
+    </div>
+  );
+
+  // essayId 가 응답에 실리면 row 전체를 Link 로 — 누르면 상세 진입.
+  // 누락된 경우(opportunistic 차단) 비활성 row (호버 없음, 클릭 무반응).
+  if (item.essayId) {
+    return (
+      <li>
+        <Link
+          to={`/essays/${item.essayId}`}
+          className="block px-4 sm:px-5 py-2.5 hover:bg-ink-50/60 transition-colors"
+        >
+          {body}
+        </Link>
+      </li>
+    );
+  }
+  return (
+    <li
+      className="block px-4 sm:px-5 py-2.5 opacity-60 cursor-not-allowed"
+      title="백엔드 응답에 essayId 가 누락되어 상세 진입이 차단되어 있습니다 (백엔드 fix 후 활성)"
+    >
+      {body}
     </li>
   );
 }

@@ -16,6 +16,14 @@
 
 ## 최근 작업 단위 (가장 최근부터)
 
+### 자소서 목록 row 전체 클릭 시 상세 진입 (2026-05-13)
+
+- **목표**: 사용자 보고 — `MyEssays` row 의 우측 [상세] 버튼만 동작, row 본문을 눌러도 반응 없음.
+- **변경**:
+  - [`src/pages/MyEssays.jsx`](../frontend/src/pages/MyEssays.jsx) — `EssayRow` 를 row 전체가 클릭 가능한 형태로 변경. `essayId` 가 있으면 `<Link to=/essays/:id>` 로 감싼 row, 없으면 비활성(opacity 낮춤 + cursor-not-allowed). 우측 [상세] 버튼은 제거 — row 본문 자체가 영역이라 중복.
+- **건드리지 않은 항목**: `essayId` 누락 시 `BackendBlockNotice` 표시 로직, 검색·필터, 진행상태 뱃지 표현(다음 EssayDetail 작업과 연결).
+- **검증**: `npx eslint ...` ✅ / `npx prettier --check` ✅ / `npm run build` ✅ 501ms.
+
 ### 죽은 `EditCertificate` 페이지/라우트 정리 (2026-05-13)
 
 - **목표**: 직전 커밋에서 `CertificateDetail` 이 view + edit 모드를 통합 흡수 → `/my-certificates/:id/edit` 가 reachable 하지 않게 됨. 정리.
