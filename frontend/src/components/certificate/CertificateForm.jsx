@@ -115,7 +115,7 @@ export default function CertificateForm({
                 'field text-[14px] py-2.5',
                 errors.certificateName && 'border-red-500 focus:border-red-500'
               )}
-              placeholder="예: 정보처리기사"
+              placeholder="자격증명을 입력하세요"
               value={form.certificateName}
               onChange={(e) => update('certificateName', e.target.value)}
             />
@@ -127,7 +127,7 @@ export default function CertificateForm({
                 errors.issuingOrganization &&
                   'border-red-500 focus:border-red-500'
               )}
-              placeholder="예: 한국산업인력공단"
+              placeholder="발급 또는 주관 기관명을 입력하세요"
               value={form.issuingOrganization}
               onChange={(e) => update('issuingOrganization', e.target.value)}
             />
@@ -148,7 +148,7 @@ export default function CertificateForm({
           <Field label="자격증 번호" error={errors.certificateCode}>
             <input
               className="field text-[14px] py-2.5"
-              placeholder="예: 24-1234-5678 (선택)"
+              placeholder="자격증 번호를 입력하세요 (선택)"
               value={form.certificateCode}
               onChange={(e) => update('certificateCode', e.target.value)}
             />

@@ -94,7 +94,7 @@ export default function ExperienceForm({
                 'field text-[14px] py-2.5',
                 errors.title && 'border-red-500 focus:border-red-500'
               )}
-              placeholder="예: AI 자소서 보조 캡스톤 프로젝트"
+              placeholder="경험을 한눈에 알아볼 수 있는 제목을 입력하세요"
               maxLength={200}
               value={form.title}
               onChange={(e) => update('title', e.target.value)}
@@ -165,6 +165,7 @@ export default function ExperienceForm({
           <StarField
             label="Situation"
             sub="어떤 상황·배경이었는지"
+            placeholder="활동 배경과 당시 상황을 입력하세요"
             value={form.star.s}
             onChange={(v) => updateStar('s', v)}
             error={errors.starS}
@@ -172,6 +173,7 @@ export default function ExperienceForm({
           <StarField
             label="Task"
             sub="어떤 과제·목표가 주어졌는지"
+            placeholder="내가 맡은 과제나 책임을 입력하세요"
             value={form.star.t}
             onChange={(v) => updateStar('t', v)}
             error={errors.starT}
@@ -179,6 +181,7 @@ export default function ExperienceForm({
           <StarField
             label="Action"
             sub="구체적으로 어떤 행동을 했는지"
+            placeholder="문제를 해결하기 위해 한 행동을 입력하세요"
             value={form.star.a}
             onChange={(v) => updateStar('a', v)}
             error={errors.starA}
@@ -186,6 +189,7 @@ export default function ExperienceForm({
           <StarField
             label="Result"
             sub="어떤 결과·교훈을 얻었는지"
+            placeholder="결과나 변화, 배운 점을 입력하세요"
             value={form.star.r}
             onChange={(v) => updateStar('r', v)}
             error={errors.starR}
@@ -320,7 +324,7 @@ function Field({ label, required, hint, error, children }) {
   );
 }
 
-function StarField({ label, sub, value, onChange, error }) {
+function StarField({ label, sub, placeholder, value, onChange, error }) {
   return (
     <div className="grid gap-1.5">
       <label className="text-[12.5px] font-semibold text-ink-700">
@@ -332,6 +336,7 @@ function StarField({ label, sub, value, onChange, error }) {
           'field text-[14px] py-2.5',
           error && 'border-red-500 focus:border-red-500'
         )}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
