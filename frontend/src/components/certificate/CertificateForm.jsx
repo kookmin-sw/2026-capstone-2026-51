@@ -140,7 +140,7 @@ export default function CertificateForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="취득일" required error={errors.getDate}>
             <YmdInput
-              value={form.getDate}
+              defaultValue={form.getDate}
               onChange={(v) => update('getDate', v)}
               hasError={!!errors.getDate}
             />
@@ -167,7 +167,7 @@ export default function CertificateForm({
           {form.hasExpiration && (
             <Field label="만료일" required error={errors.expirationDate}>
               <YmdInput
-                value={form.expirationDate}
+                defaultValue={form.expirationDate}
                 onChange={(v) => update('expirationDate', v)}
                 hasError={!!errors.expirationDate}
               />
@@ -393,14 +393,25 @@ function Field({ label, required, hint, error, children }) {
 
 /**
  * 년/월/일 숫자 3칸. 자격증 일자는 요일 정보가 의미 없어서 캘린더 대신 숫자 입력.
- * value 는 'YYYY-MM-DD' 또는 '' 만 받음 — 한 칸이라도 비면 onChange('') 로 보고.
+ *
+ * Uncontrolled 패턴 — `defaultValue` 로만 초기화하고 그 후엔 내부 state(parts)가
+ * 진실의 원천. 부모로는 'YYYY-MM-DD' 완성 형태 또는 '' 만 onChange 로 보냄.
+ *
+ * 왜 controlled 안 쓰나: 부모 form state 에 'YYYY-MM-DD' 형식만 저장하면 사용자가
+ * 한 칸을 비우는 순간 joinYmd 가 '' 를 반환해 부모 state 도 비워지고, 그게 다시
+ * value 로 내려와 다른 두 칸의 visible 값까지 비워지는 버그가 발생. partial 입력
+ * 상태는 자식 내부에만 두는 게 자연스러움. 부모는 onChange 콜백 시점에만 알면 됨.
  */
-function YmdInput({ value, onChange, hasError }) {
-  const parts = parseYmd(value);
+function YmdInput({ defaultValue, onChange, hasError }) {
+  const [parts, setParts] = useState(() => parseYmd(defaultValue));
+
   const setPart = (k, raw, maxLen) => {
     const cleaned = raw.replace(/\D/g, '').slice(0, maxLen);
-    onChange(joinYmd({ ...parts, [k]: cleaned }));
+    const next = { ...parts, [k]: cleaned };
+    setParts(next);
+    onChange(joinYmd(next));
   };
+
   const baseCell = cn(
     'field text-[14px] py-2.5 text-center tabular-nums',
     hasError && 'border-red-500 focus:border-red-500'
@@ -447,8 +458,10 @@ function parseYmd(s) {
   return { y, m, d };
 }
 
+// 년은 4 자리 강제, 월·일은 자동 zero-pad. 셋 중 하나라도 비면 '' 반환
+// (부모는 validate 에서 잡음).
 function joinYmd({ y, m, d }) {
-  if (!y && !m && !d) return '';
   if (!y || !m || !d) return '';
-  return `${y.padStart(4, '0')}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  if (y.length !== 4) return '';
+  return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
 }

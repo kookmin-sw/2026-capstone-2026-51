@@ -16,6 +16,16 @@
 
 ## 최근 작업 단위 (가장 최근부터)
 
+### 자격증 YmdInput 입력 불가 버그 수정 — uncontrolled 패턴으로 전환 (2026-05-13)
+
+- **목표**: 사용자 보고 — 자격증 폼 년월일 칸에 숫자가 한 글자도 안 박힘.
+- **원인**: 직전 커밋의 `YmdInput` 이 controlled 였고, `joinYmd` 가 셋 중 한 칸이라도 비면 `''` 를 반환. 사용자가 '2' 입력 → onChange('') → 부모 form state '' → 다음 렌더에 `value=''` → input 비워짐. partial 입력 자체가 부모로 못 흘러가는 dead-end.
+- **변경**:
+  - [`src/components/certificate/CertificateForm.jsx`](../frontend/src/components/certificate/CertificateForm.jsx) — `YmdInput` 을 fully uncontrolled 로 전환. `value` prop → `defaultValue` 로 이름 변경(mount 시 1 회만 초기화). partial 입력 상태(`parts`) 는 자식 내부 state 가 진실의 원천. 부모 form 에는 onChange 콜백을 통해 'YYYY-MM-DD' 완성 형태 또는 '' 만 전달 — 사용자가 한 칸을 비우면 부모는 '' 를 받지만 자식의 다른 두 칸은 그대로 유지됨.
+- **건드리지 않은 항목**: `joinYmd` (셋 중 비면 '' 정책 그대로), `isValidYmd` 검증, 자격증 외 다른 폼.
+- **검증**: `npx eslint ... CertificateForm.jsx` ✅ EXIT 0 / `npx prettier --check` ✅ / `npm run build` ✅ 476ms.
+- **이유**: React 19 `react-hooks/set-state-in-effect` 룰이 useEffect 안에서 setState 호출을 금지함. controlled + `useEffect(...sync...)` 패턴은 막혔고, "Adjusting state during rendering" 패턴(`if (prev !== curr) setState`) 은 자식이 부모를 ''로 만든 직후 자기 자신도 비워지는 또 다른 버그를 만듦. partial 입력 UX 가 필요한 입력 컴포넌트에서 controlled 강제는 부적절 → uncontrolled 가 자연스러움.
+
 ### 경험 필터 칩에 카테고리 색 점 표시 (2026-05-13)
 
 - **목표**: 사용자 후속 요청 — 카테고리 뱃지 색 분리 작업의 연장. 목록 상단 필터 칩에도 같은 색을 점(dot) 으로 표시해 한 화면에서 색·라벨 매핑을 즉시 학습할 수 있게.
