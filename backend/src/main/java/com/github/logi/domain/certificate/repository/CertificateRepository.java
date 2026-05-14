@@ -18,7 +18,7 @@ public interface CertificateRepository extends JpaRepository<Certificate, UUID> 
 
     // major + state 기준 평균 자격증 수
     @Query("""
-            SELECT COUNT(c) * 1.0 / COUNT(DISTINCT c.user) AS avg
+            SELECT CASE WHEN COUNT(DISTINCT c.user) = 0 THEN 0.0 ELSE COUNT(c) * 1.0 / COUNT(DISTINCT c.user) END AS avg
             FROM Certificate c
             JOIN c.user u
             WHERE u.major = :major AND u.state = :state
@@ -29,7 +29,7 @@ public interface CertificateRepository extends JpaRepository<Certificate, UUID> 
     );
 
     @Query("""
-            SELECT COUNT(c) * 1.0 / COUNT(DISTINCT c.user) AS avg
+            SELECT CASE WHEN COUNT(DISTINCT c.user) = 0 THEN 0.0 ELSE COUNT(c) * 1.0 / COUNT(DISTINCT c.user) END AS avg
             FROM Certificate c
             JOIN c.user u
             WHERE u.major = :major AND u.schoolNumber LIKE :schoolNumPrefix%
@@ -40,7 +40,7 @@ public interface CertificateRepository extends JpaRepository<Certificate, UUID> 
     );
 
     @Query("""
-            SELECT COUNT(c) * 1.0 / COUNT(DISTINCT c.user) AS avg
+            SELECT CASE WHEN COUNT(DISTINCT c.user) = 0 THEN 0.0 ELSE COUNT(c) * 1.0 / COUNT(DISTINCT c.user) END AS avg
             FROM Certificate c
             JOIN c.user u
             WHERE u.major = :major AND u.state = com.github.logi.domain.user.entity.State.WORKER
