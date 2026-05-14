@@ -19,7 +19,7 @@ public interface ExperienceRepository extends JpaRepository<Experience, UUID> {
 
     // major + state 기준 카테고리별 평균 경험 수 (STATE groupBy)
     @Query("""
-            SELECT e.experienceCategory AS category, COUNT(e) * 1.0 / COUNT(DISTINCT e.user) AS avg
+            SELECT e.experienceCategory AS category, CASE WHEN COUNT(DISTINCT e.user) = 0 THEN 0.0 ELSE COUNT(e) * 1.0 / COUNT(DISTINCT e.user) END AS avg
             FROM Experience e
             JOIN e.user u
             WHERE u.major = :major AND u.state = :state
@@ -32,7 +32,7 @@ public interface ExperienceRepository extends JpaRepository<Experience, UUID> {
 
     // major + schoolNumber prefix 기준 카테고리별 평균 (SCHOOL_NUM groupBy)
     @Query("""
-            SELECT e.experienceCategory AS category, COUNT(e) * 1.0 / COUNT(DISTINCT e.user) AS avg
+            SELECT e.experienceCategory AS category, CASE WHEN COUNT(DISTINCT e.user) = 0 THEN 0.0 ELSE COUNT(e) * 1.0 / COUNT(DISTINCT e.user) END AS avg
             FROM Experience e
             JOIN e.user u
             WHERE u.major = :major AND u.schoolNumber LIKE :schoolNumPrefix%
@@ -45,7 +45,7 @@ public interface ExperienceRepository extends JpaRepository<Experience, UUID> {
 
     // major + WORKER 기준 카테고리별 평균 (WORKER groupBy)
     @Query("""
-            SELECT e.experienceCategory AS category, COUNT(e) * 1.0 / COUNT(DISTINCT e.user) AS avg
+            SELECT e.experienceCategory AS category, CASE WHEN COUNT(DISTINCT e.user) = 0 THEN 0.0 ELSE COUNT(e) * 1.0 / COUNT(DISTINCT e.user) END AS avg
             FROM Experience e
             JOIN e.user u
             WHERE u.major = :major AND u.state = com.github.logi.domain.user.entity.State.WORKER
