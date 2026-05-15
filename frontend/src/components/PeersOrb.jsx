@@ -3,18 +3,20 @@
  * Three.js (window.THREE) 사용. 마우스 드래그로 회전, 자동 회전.
  *
  * props:
- *   axes  — [{ label, me, peers }] (값 0~100)
+ *   axes    — [{ label, me, peers }] (값 0~100)
  *   title, sub
+ *   warning — 그래프 하단에 빨간 글씨로 표시할 안내 (예: 임시 데이터 사용 중)
  *
  * 5축 파라미터(label/me/peers)는 절대 변경하지 않고, 시각화만 입체로 바꿉니다.
  */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 export default function PeersOrb({
   axes,
   title = '내 동기들은 뭐하고 있을까?',
-  sub = '소프트웨어학부 22학번 · 익명 집계 · 214명 기준',
+  sub = '익명 집계',
+  warning,
 }) {
   const wrapRef = useRef(null);
 
@@ -290,9 +292,10 @@ export default function PeersOrb({
     }
 
     /* ========== Interaction (drag rotate) ========== */
+    // 자동 회전 제거 — 초기 모멘텀(velY) 0 으로 시작.
     let rotY = 0.0,
       rotX = 0.18,
-      velY = 0.003,
+      velY = 0,
       velX = 0;
     let isDragging = false;
     let lastX = 0,
@@ -334,8 +337,8 @@ export default function PeersOrb({
     dom.addEventListener('pointerleave', onUp);
 
     /* ========== Animate ========== */
+    // 드래그하지 않을 땐 정지 — 드래그로 생긴 관성만 자연감쇠 후 0 으로 수렴.
     let raf;
-    const baseSpin = 0.0015;
     const tick = () => {
       raf = requestAnimationFrame(tick);
       if (!isDragging) {
@@ -345,9 +348,6 @@ export default function PeersOrb({
         velX *= 0.93;
         rotX = Math.max(-0.9, Math.min(0.9, rotX));
         rotX += (0.18 - rotX) * 0.005;
-        if (Math.abs(velY) < 0.0008 && Math.abs(velX) < 0.0008) {
-          rotY += baseSpin;
-        }
       }
       orbGroup.rotation.y = rotY;
       orbGroup.rotation.x = rotX;
@@ -439,6 +439,11 @@ export default function PeersOrb({
           동기 평균
         </span>
       </div>
+      {warning && (
+        <p className="mt-3 text-center text-[12.5px] text-red-600 leading-relaxed">
+          {warning}
+        </p>
+      )}
     </section>
   );
 }
