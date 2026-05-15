@@ -121,7 +121,9 @@ export default function EssayEdit() {
 function MetaSection({ meta, setMeta, editing, setEditing }) {
   const [draft, setDraft] = React.useState(meta);
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (editing) setDraft(meta);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
   if (!editing) {
@@ -212,6 +214,7 @@ function QuestionEditCard({ q, index, requirements, onChange, onRemove }) {
   });
   React.useEffect(() => {
     if (editing)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDraft({
         title: q.title,
         limit: q.limit,
@@ -220,6 +223,7 @@ function QuestionEditCard({ q, index, requirements, onChange, onRemove }) {
         requirements: '',
         altDraft: '',
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
   const [busyEditGen, setBusyEditGen] = React.useState(false);
 

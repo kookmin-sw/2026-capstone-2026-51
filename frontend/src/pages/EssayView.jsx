@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Pencil, ArrowLeft, ChevronRight } from 'lucide-react';
 import Crumbs from '../components/Crumbs';

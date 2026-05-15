@@ -90,7 +90,7 @@ function Field({ label, required, hint, children }) {
 }
 
 /* ============== Step 2 ============== */
-function Step2({ form, onChange, questions, setQuestions, onBack, onSave }) {
+function Step2({ form, questions, setQuestions, onBack, onSave }) {
   const addQuestion = () => {
     const id = Date.now();
     // LLM 추천: match 상위 2개 자동 선택
