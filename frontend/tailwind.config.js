@@ -109,6 +109,16 @@ export const theme = {
 
 export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
+  // `.badge-${tone}` 처럼 동적으로 만든 클래스명은 JIT 정적 스캔이 못 잡아 purge 되므로
+  // 카테고리 톤 5종 + 공통 .badge 를 safelist 로 강제 포함.
+  safelist: [
+    'badge',
+    'badge-gray',
+    'badge-navy',
+    'badge-green',
+    'badge-red',
+    'badge-amber',
+  ],
   theme,
   plugins: [],
 };

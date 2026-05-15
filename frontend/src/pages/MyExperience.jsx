@@ -14,9 +14,9 @@ import {
 /**
  * /my-experience — 내 경험 목록.
  *
- * 디자인 (2026-05-10 번호 매긴 콤팩트 리스트로 개편):
- *  - 단일 .card !p-0 셸 안에 검색창 + 카테고리 필터 + <ol> 번호 매긴 row 리스트.
- *  - 각 row 는 한두 줄(번호 + 카테고리 뱃지 + 제목 + 기간/전공) 콤팩트.
+ * 디자인:
+ *  - 단일 .card !p-0 셸 안에 검색창 + 카테고리 필터 + row 리스트.
+ *  - 각 row 는 카테고리 컬러 chip(dot + 라벨) + 제목 / 기간·전공 두 줄.
  *  - STAR 미리보기/토글은 제거 (상세 페이지에서 전체 노출).
  *  - 검색·필터 모두 클라이언트 사이드 (백엔드 query param 미지원).
  *  - 검색 대상: 제목 (experienceTitle) 부분일치만.
@@ -158,27 +158,23 @@ function ExpRow({ index, item }) {
         to={`/my-experience/${item.experienceId}`}
         className="block px-4 sm:px-5 py-2.5 hover:bg-ink-50/60 transition-colors"
       >
-        <div className="flex items-start gap-3">
-          <span className="text-[12.5px] font-semibold text-ink-400 tabular-nums shrink-0 w-6 pt-[3px] text-right">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[13px] font-medium text-ink-400 tabular-nums shrink-0">
             {index}.
           </span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`badge-${tone}`}>{label}</span>
-              <h3 className="text-[14px] font-semibold text-ink-900 tracking-tight break-keep">
-                {item.experienceTitle}
-              </h3>
-            </div>
-            <div className="text-[12px] text-ink-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 tabular-nums">
-              <span>{period}</span>
-              {item.relatedMajor && (
-                <>
-                  <span className="text-ink-300">·</span>
-                  <span>관련 전공 {item.relatedMajor}</span>
-                </>
-              )}
-            </div>
-          </div>
+          <span className={`badge-${tone}`}>{label}</span>
+          <h3 className="text-[14px] font-semibold text-ink-900 tracking-tight break-keep">
+            {item.experienceTitle}
+          </h3>
+        </div>
+        <div className="text-[12px] text-ink-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 tabular-nums">
+          <span>{period}</span>
+          {item.relatedMajor && (
+            <>
+              <span className="text-ink-300">·</span>
+              <span>관련 전공 {item.relatedMajor}</span>
+            </>
+          )}
         </div>
       </Link>
     </li>
@@ -225,13 +221,12 @@ function Loading() {
     <ul className="divide-y divide-ink-150">
       {[0, 1, 2].map((i) => (
         <li key={i} className="px-4 sm:px-5 py-2.5 animate-pulse">
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-2 mb-1.5">
             <div className="h-3 w-4 bg-ink-100 rounded shrink-0" />
-            <div className="flex-1">
-              <div className="h-3.5 w-1/3 bg-ink-100 rounded mb-1.5" />
-              <div className="h-3 w-2/3 bg-ink-100 rounded" />
-            </div>
+            <div className="h-4 w-14 bg-ink-100 rounded-full shrink-0" />
+            <div className="h-3.5 w-1/3 bg-ink-100 rounded" />
           </div>
+          <div className="h-3 w-2/3 bg-ink-100 rounded" />
         </li>
       ))}
     </ul>
