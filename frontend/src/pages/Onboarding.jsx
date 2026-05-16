@@ -112,21 +112,19 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-page flex flex-col items-center px-4 sm:px-6 pt-8 sm:pt-10 pb-16 sm:pb-24">
-      {/* 브랜드 */}
-      <div className="flex items-center gap-2.5 mb-6 sm:mb-7 text-primary-900 font-bold text-[18px] sm:text-[19px] tracking-tight">
-        <span className="grid place-items-center w-8 h-8 rounded-md bg-primary-900 text-white">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M5 4v16M5 20h12"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="18" cy="7" r="2" fill="currentColor" />
-          </svg>
-        </span>
-        Logi
+      {/* 브랜드 — Landing / Sidebar 와 동일한 /logo.svg + Logi + Kookmin University */}
+      <div className="flex items-center gap-2.5 mb-6 sm:mb-7">
+        <img
+          src="/logo.svg"
+          alt="Logi"
+          className="w-8 h-8 object-contain"
+        />
+        <div className="leading-tight">
+          <div className="text-primary-900 font-bold text-[18px] sm:text-[19px] tracking-tight">
+            Logi
+          </div>
+          <div className="text-ink-500 text-[10.5px]">Kookmin University</div>
+        </div>
       </div>
 
       <div className="w-full max-w-[920px] bg-paper border border-border rounded-xl shadow-md overflow-hidden">
