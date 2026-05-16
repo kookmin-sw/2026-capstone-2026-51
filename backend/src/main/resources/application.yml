@@ -27,6 +27,7 @@ app:
   cors:
     allowed-origins:
       - http://localhost:3000
+      - https://master.d1zot924wp65d0.amplifyapp.com
   embedding:
     model-id: ${EMBEDDING_MODEL_ID:amazon.titan-embed-text-v2:0}
   llm:
