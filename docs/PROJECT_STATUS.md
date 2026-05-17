@@ -16,6 +16,83 @@
 
 ## 최근 작업 단위 (가장 최근부터)
 
+### 랜딩 전면 재설계 v2 — 미술관·스튜디오 톤 + Wanted Sans·Geist·Fraunces (2026-05-17)
+
+- **계기**: v1 (포스터 톤 카드 그리드) 에 대해 사용자 피드백 — "AI 만든 티 너무 나고 폰트도 별로고 임팩트 없다". 진단: 모든 카드가 동일 padding·radius (균일성이 의도가 아니라 게으름처럼 보임), 가운데 정렬 hero + 표준 SaaS 클리셰, 그라데이션 남발로 강조 사라짐, Pretendard 단독으로 한국 시스템 폰트 수준이라 그 자체로는 개성 없음.
+- **방향 (사용자와 단계별 합의)**:
+  - 임팩트 톤: 미술관·디자인 스튜디오 (Hyundai · Lusion light) 베이스 + 스튜디오 모션 (Active Theory · lusion.co) 하이브리드. 콘텐츠 압축, 풀블리드 색면, 비대칭, 거대 타이포에 베팅.
+  - 폰트 (내 결정, 사용자 위임): 한글 **Wanted Sans Variable** + 영문 디스플레이 **Geist** + 영문 이탤릭 액센트 **Fraunces**. 폰트 페어로 매거진 톤 한 스푼.
+  - 컬러 시스템: 라이트 `#c3e7fe` + `#91d5ff` 페어 유지하되, 그라데이션 줄이고 (액센트 텍스트·하단 줄 1곳만) **컬러 블록 (full-bleed sky / deep / white)** 위주로 운영. 코발트 `#1d4ed8` 는 sole accent 로 절제.
+- **레이아웃 원칙 (v1 의 패턴 폐기)**:
+  - **Hero 좌측 정렬** + 거대 헤드라인 (clamp 3rem → 11rem, Wanted Sans 800), `자소서가` 한 줄만 indent 7rem 으로 비대칭. 우측 작은 aside (소개 + CTA). 카드형 stat 그리드 폐기.
+  - Hero 우측 **거대 라이트블루 원형 색면** (`#sky-mass`) + 마우스 패럴랙스 (lerp easing 0.06). 별도 `.sky-ring` 디테일 (좌측 작은 원 + 내부 dot).
+  - **4 카드 그리드 → 풀블리드 4 섹션** (`.flow-step[data-bg="sky|white|deep|sky"]`). 각 섹션 `min-height: 100vh`, 좌측 텍스트 + 우측 비주얼. 좌측 거대 번호 (`.flow-num`, clamp 7rem → 18rem, opacity 0.08~0.12).
+  - **각 STEP 비주얼이 모두 다름** (균일성 폐기):
+    - STEP 01: STAR 카드 3장 스택 (회전 -6°/+2°/+8°, hover 시 분산)
+    - STEP 02: 미니멀 라인 유사도 바 (2px 트랙, Geist 큰 숫자)
+    - STEP 03: 매거진 톤 AI 인용 (Fraunces 이탤릭) + 답변 (Wanted Sans)
+    - STEP 04: 동료 비교 라인 통계 (얇은 트랙 + 짧은 마커)
+  - **WHY 섹션을 큰 인용구 한 줄로** 변경 — Fraunces 이탤릭 (clamp 1.8rem → 4rem) + 강조구 `"내가 그때 정확히 뭘 했더라?"` 에 sky-300 형광펜 underline.
+  - **Impact 거대 숫자** (Geist 200 weight, clamp 4rem → 11rem) 2x2 그리드, 셀 보더만으로 구분.
+  - **Team 카드 폐기 → 매거진 row list** (번호 · 이름 + 영문 + 역할 + 링크), Lead 만 작은 라벨.
+  - **마키 텍스트** (가로 흐르는 카테고리·기술 키워드) hero 하단에 추가 — Fraunces 이탤릭 한글 + Geist 산세리프 대문자 영문 페어로 매거진 인상.
+- **모션 (스튜디오 톤)**:
+  - Hero sky-mass: mousemove → translate3d lerp (0.06 ease). 스크롤 → opacity 감소.
+  - Topbar scrolled state (12px 이상 스크롤 시 배경 ON, 본문이 hero 색면 아래에서도 nav 가독성).
+  - **line-by-line reveal** (`.reveal-line > span` 110% translateY 클립으로 글자가 아래에서 올라오는 효과) — Hero 헤드라인에 적용.
+  - 카드 stack hover 분산, 통계 막대 / 카운트업 / 다이어그램 dasharray 흐름.
+- **변경 파일**:
+  - [`index.html`](../index.html) — 전면 재작성. 직전 v1 (1925줄, GitHub 다크 카드 그리드) → ~1300줄 (CSS 토큰 단순화, 균일 카드 / 그라데이션 / `.brand-mark` 등 v1 잔재 dead style 모두 제거).
+- **계속 적용된 항목** (v1 의 fix 그대로 유지):
+  - `html.js-ready .reveal` 가드 (JS 미동작 시 콘텐츠는 보임)
+  - `<link rel="stylesheet">` 에서 비표준 `as="style"` 제거
+  - `assets/logo.png` 를 nav 좌측 brand 로 사용 (다크 모드에서 brightness 1.5 + 라이트블루 drop-shadow)
+  - GitHub URL 오타 (`2026-capstone-2026-51` → `2026-capstone-51`) 모두 정정
+  - 메타 태그 (description / OG / Twitter / theme-color 라이트/다크 분리 / SVG favicon)
+  - `target="_blank"` 에 `rel="noopener"`
+  - 한혜민 GitHub `gksgpals` 채움. 나머지 3명은 placeholder ("준비 중" 텍스트).
+- **시연 환경**: 로컬 정적 서버 `python3 -m http.server 8000` 띄워서 http://localhost:8000 로 확인 중. master 에 push 안 함 (사용자 명시 — 로컬 확인 후 결정).
+- **남은 작업**:
+  - 팀원 4명 정보 받으면 `.team-row-links` placeholder 교체.
+  - 사용자 OK 시 push.
+
+### GitHub Pages 랜딩 전면 리디자인 — 포스터 톤 + 라이트/다크 토글 (2026-05-17)
+
+- **계기**: 기존 `index.html` (1732줄, GitHub 다크 톤) 이 "AI 가 대충 만든 티가 나고 색감이 포스터와 전혀 다르다" 는 사용자 피드백. 캡스톤 포스터 (`docs/poster.pdf`) 의 라이트블루 톤 (`#c3e7fe` + `#91d5ff`) 을 메인으로 가져가되 임팩트는 타이포·여백·모션으로 만드는 방향으로 전면 재설계.
+- **디자인 결정 (사용자와 단계별 합의)**:
+  - 무드: 에디토리얼/매거진 → 포스터 분석 후 "학술 리서치 + 클린 SaaS" 톤으로 수정
+  - 컬러 (라이트): `#c3e7fe` + `#91d5ff` 베이비블루 페어 + `#1d4ed8` 코발트블루 액센트 + 화이트 베이스
+  - 컬러 (다크): 깊은 네이비 베이스 (`#050b18` / `#0a1322`) + 라이트블루 글로우 — 내가 정함 (사용자가 "조화롭게 인상깊고 이쁘게" 위임)
+  - 폰트: Pretendard Variable (CDN: jsdelivr/orioncactus)
+  - 구조: 포스터 6섹션을 웹으로 확장 (Hero → Abstract → Main Features → Service Architecture → Expected Impact → Team)
+  - 모션: 풍부 (스크롤 reveal, 카운트업, 그라데이션 라인 흐름, AI 타이핑, 파티클 캔버스, 카드 호버, 플로팅 orb)
+- **변경 파일**:
+  - [`index.html`](../index.html) — **전면 교체** (1732줄 → 신규 작성). 인라인 CSS 디자인 토큰 시스템 (`:root[data-theme="light|dark"]` 변수 2세트) + 6 섹션 + 인라인 SVG 아키텍처 다이어그램 + 인라인 JS (테마 토글 / 파티클 캔버스 / IntersectionObserver 4종 / 카운트업 / 타이핑).
+- **수정한 버그·이슈** (이전 분석에서 발견한 것들):
+  1. GitHub URL 오타 3곳 (`kookmin-sw/2026-capstone-2026-51` → `kookmin-sw/2026-capstone-51`)
+  2. 메타 태그 부재 → `description` / OG / Twitter Card / `theme-color` / 인라인 SVG favicon 추가
+  3. `target="_blank"` 에 `rel="noopener"` 추가
+  4. 한혜민 GitHub 핸들 placeholder → `gksgpals` 채움 (사용자 본인, 메모리에서 확인)
+- **포스터 톤 매칭**: 헤더 박스의 라이트블루 그라데이션 → `eyebrow` 라벨 / `feat-tag` / `stack-card-head` 의 코발트 + sky-100 톤으로 변환. 포스터의 "모니터 목업 4개" → `feat-card` 4개에 각각 mock UI (경험 목록 / 유사도 바 / AI 타이핑 / 통계 비교) 로 재해석. 포스터의 AWS 다이어그램 → 인라인 SVG (1000×460 viewBox) 다이어그램 + 흐르는 dasharray 애니메이션.
+- **다크 모드 동작**: localStorage `logi-theme` 키에 저장. 최초 방문 시 `prefers-color-scheme` 따라감. 우상단 토글 버튼으로 즉시 전환 (CSS 변수만 바뀌므로 깜빡임 없음). 캔버스 파티클 색상도 테마에 맞게 동기화.
+- **접근성**: 모든 `section` 에 `aria-labelledby`, `aria-hidden` 적절히 부여. `prefers-reduced-motion` 처리. 키보드 포커스 시각 가능. 컬러 콘트라스트 ink-900/ink-500 페어로 AA 보장 (라이트), 다크는 ink-900 / ink-500 모두 sky 톤으로 보정.
+- **반응형**: 960px 이하에서 grid 1열 / 2열 변환, 640px 이하에서 nav-links 숨김 + hero stats 2x2.
+- **푸시 정책**: 사용자가 명시적으로 "깃허브에 바로 올리지 말고 우선 작업은 내 로컬에서 하자" — `git push` 안 함. master 브랜치 working tree 에만 반영.
+- **건드리지 않은 항목**:
+  - `docs/PROJECT_STATUS.md` 본 항목 외엔 손대지 않음.
+  - `backend/` 전체 (frontend-only 정책).
+  - `_config.yml` (Jekyll `jekyll-theme-slate` — `.html` 직접 서빙에는 영향 없음).
+  - `assets/logo.png` (README 용 — 페이지에는 SVG 데이터 URI favicon 으로 대체).
+  - 김민재·도승준 팀원 정보 → 사용자가 "다음 차례에 전체 팀원 정보 알려주겠다" 한 상태라 placeholder 유지.
+- **남은 작업**:
+  - 팀원 정보 (김민재·도승준·한혜민 이메일, 김민재·도승준 GitHub) 받으면 4 카드 placeholder → 실제 정보로 교체.
+  - GitHub Pages 캐시 새로고침은 사용자가 push 결정 후.
+  - 백엔드의 `backend/src/main/java/...` 경로에 macOS Finder 가 만든 ` 2.java` 접미 중복 파일 20개 추적 안 됨 상태 — 프론트 작업과 무관하지만 시연 전 정리 권장 (read-only 정책상 본 작업에서 손대지 않음).
+- **후속 수정 (같은 세션, 사용자가 "빈 화면" 보고)**:
+  1. **빈 화면 원인**: 모든 hero 요소에 `.reveal { opacity: 0 }` 가 깔려있는데, JS 의 IntersectionObserver 가 어떤 이유로든 실행 못 하면 영구 숨김. → `html.js-ready .reveal { opacity: 0 }` 가드로 변경. JS 최상단에서 `document.documentElement.classList.add('js-ready')` 호출. JS 실패 시에도 콘텐츠는 보임.
+  2. `<link rel="stylesheet" as="style" ...>` 의 비표준 `as` 속성 제거 (rel="stylesheet" 에서는 무시되지만 일부 strict 환경에서 stylesheet 무시 가능성 제거).
+  3. **로고 통합**: 사용자가 새 로고 첨부 (말풍선+펜 아이콘 + "LogI" 워드마크). nav 의 인라인 그라데이션 박스 + "LogI" 텍스트 조합을 `<img src="assets/logo.png" alt="LogI" class="brand-logo">` 한 줄로 교체. `.brand-logo` 스타일 추가 (height 30px, hover translateY, 다크 모드 brightness 1.15 + 라이트블루 drop-shadow). 기존 `.brand-mark` CSS 는 남겨둠 (재사용 가능, 미사용 dead style 이지만 후속 디자인 변경 시 활용 여지).
+
 ### README 에 캡스톤 포스터 섹션 추가 (2026-05-17)
 
 - **계기**: README 초안이 텍스트·다이어그램 중심이라 "한 화면에 감 잡기" 가 어려움. 사용자가 캡스톤 포스터 PDF + 같은 내용 PNG 첨부, 인라인 임베드 + PDF 원본 다운로드 패턴 채택.
